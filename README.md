@@ -272,7 +272,7 @@ echo $parser->parse($input);
 Для сложных проектов лучше использовать полноценные шаблонизаторы (Twig, Blade), но этот вариант отлично работает как минималистичное решение.
 
 
-Да, разработанный класс `IndentParser` поддерживает многоуровневую вложенность. Приведем пример с древовидной структурой папок и файлов:
+Да, разработанный класс `TagParser` поддерживает многоуровневую вложенность. Приведем пример с древовидной структурой папок и файлов:
 
 ```php
 $input = "
@@ -289,7 +289,7 @@ ul.tree
     span Папка 3
 ";
 
-$parser = new IndentParser();
+$parser = new TagParser();
 echo $parser->parse($input);
 ```
 
@@ -371,7 +371,7 @@ table.table-style[border='1']
       td[colspan='2'] Нижний заголовок
 ";
 
-$parser = new IndentParser();
+$parser = new TagParser();
 echo $parser->parse($input);
 ```
 
