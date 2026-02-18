@@ -124,7 +124,7 @@ $input = "input(type='email' required)";
 // 09.04.2025 автор Алексей Нечаев, г. Москва, +7(999)003-90-23, nechaev72@list.ru
 
 
-class TagParse {
+class TagParser {
    const VOID_TAGS = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
     private $html;
 	
@@ -244,7 +244,7 @@ $input = "
 ul#main.menu
   li.item Пункт 1
   li.item.active Пункт 2
-  input[type='text' placeholder='Введите имя']
+  input(type='text' placeholder='Введите имя')
 ";
 
 echo new TagParser($input);
@@ -266,8 +266,9 @@ echo new TagParser($input);
 4. **Поддерживаемые элементы:**
    - Тег: `div` (по умолчанию)
    - ID: `#id`
+   - name: `/name`
    - Классы: `.class1.class2`
-   - Атрибуты: `[attr1="val1" attr2]`
+   - Атрибуты: `(attr1="val1" attr2)`
    - Текст: после атрибутов
 
 ### Аналогичные решения:
