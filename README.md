@@ -107,7 +107,7 @@ div
 
 ### 3. Специальные атрибуты
 ```php
-$input = "input[type='email' required]";
+$input = "input(type='email' required)";
 ```
 **Результат:**
 ```html
