@@ -58,7 +58,7 @@ div#header.main(data-role='banner')
 ```
 #### Пример
 ```
-div#header/name.container[data-role='main'] Заголовок
+div#header/name.container(data-role='main') Заголовок
     ^^     ^            ^                 ^
     |      |            |                 |
     отступы          атрибуты           текст
