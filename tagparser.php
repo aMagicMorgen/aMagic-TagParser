@@ -1,128 +1,153 @@
 <?php
 //tagparser.php
-// 09.04.2025 автор Алексей Нечаев, г. Москва, +7(999)003-90-23, nechaev72@list.ru
-/*
-// Пример использования
-$input = "
-ul.menu#main
-  li.item Пункт 1
-  li.item.active Пункт 2
-  input[type='text' placeholder='Введите имя']
-";
+// 18.02.2026 автор Алексей Нечаев, г. Москва, +7(999)003-90-23, nechaev72@list.ru
 
-$parser = new TagParser();
-echo $parser->parse($input);
+class TagParse {
+   const VOID_TAGS = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+    private $html;
+	
+	public function __toString(): string {
+        return $this->html;
+    }
+	
+	private function isVoidTag(string $tag): bool {
+        return in_array($tag, static::VOID_TAGS);
+    }
+	
+	// определяем это путь к файлу в котором строка или строка из переменной
+	private function getTemplate(string $shablon)
+	{
+		 // Если файл существует - читаем его
+		 if(file_exists($shablon)) $shablon = file_get_contents($shablon);
+		return $shablon;
+	 }
 
-//Результат
-'
-<ul id="main" class="menu">
-  <li class="item">Пункт 1</li>
-  <li class="item active">Пункт 2</li>
-  <input type="text" placeholder="Введите имя">
-</ul>
-'
-*/
-class TagParser {
-    // Теги без закрывающего элемента (void elements)
-    const VOID_TAGS = [
-        'area', 'base', 'br', 'col', 'embed', 'hr', 'img',
-        'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'
-    ];
-
-    public function parse(string $input): string {
+    public function __construct(string $input) {
+		$input = $this->getTemplate($input);
         $lines = explode("\n", trim($input));
         $stack = [];
-        $prevIndent = 0;
-        $output = '';
+        $this->html = '';
 
         foreach ($lines as $line) {
-            // Пропускаем пустые строки
-            if (trim($line) === '') continue;
-
+			 #$line = trim($line);
+			// Пропускаем пустые строки
+            if (trim($line) === '' || strpos($line, "<!--") || strpos($line, "-->")) continue;
+			// Коментарии
+			if(strpos(' ' . $line, '//')) {
+				$this->html .= "\n<!-- " . trim(str_replace('//', '', $line)) . " -->";
+				continue;
+			}
+			// пропускаем HTML
+			if(trim($line)[0] == '<') {
+				$this->html .= "\n" . $line;
+				continue;
+			}
+			
             // Определяем уровень вложенности
             preg_match('/^(\s*)/', $line, $matches);
-            //$indent = strlen($matches[1]);
-			$indent = strlen(str_replace("\t", "  ", $matches[1])); // 1 таб = 2 пробела
-            $content = trim($line);
+			$space = str_replace("\t", "  ", $matches[1]);
+            $indent = strlen($space);
 
-            // Закрываем предыдущие теги при уменьшении вложенности
-            while ($indent < $prevIndent) {
-                array_pop($stack);
-                $prevIndent -= 2;
+			// Закрываем теги при снижении уровня вложенности
+            while ($indent < (count($stack) * 2)) {
+                $this->html .= '</' . array_pop($stack) . '>';
             }
-
-            // Парсим текущую строку
-            $node = $this->parseLine($content);
-            $output .= $this->renderTag($node, $stack);
-
-            // Добавляем в стек если тег не void
-            if (!in_array($node['tag'], self::VOID_TAGS)) {
-                array_push($stack, $node['tag']);
-                $prevIndent += 2;
-            }
+			
+			// Парсим текущую строку
+            $node = $this->parseLine(trim($line));
+      
+			// Генерация HTML-кода
+            $this->html .= "\n" . $space . $this->renderTag($node);		
+		
+			if (!$this->isVoidTag($node['tag']) && $node['tag'] !== 'include') {
+				array_push($stack, $node['tag']);
+			}
         }
 
         // Закрываем оставшиеся теги
         while (!empty($stack)) {
-            $output .= '</' . array_pop($stack) . '>';
+            $this->html .= "</" . array_pop($stack) . ">\n";
         }
-
-        return $output;
     }
+	
+	private function parseLine(string $line): array {
+        // Парсим строку с помощью регулярного выражения
+					  # Тег         #ID            /name         .Классы         (Атрибуты)     пробел Текст
+       	preg_match('/^(?:([a-z0-9]+))?(?:#([\w-]+))?(?:\/([\w-]+))?(?:\.([\w.-]+))?(?:\((.*?)\))?(?:\s+(.*))?$/i', $line, $matches);
 
-    private function parseLine(string $line): array {
-        // Регулярка для разбора строки
-        preg_match('/
-            ^
-            (?:([a-z]+))?                # Тег
-            (?:#([\w-]+))?               # ID
-            (?:\.([\w.-]+))?             # Классы
-            (?:\[(.*?)\])?               # Атрибуты
-            (?:\s+(.+))?                 # Текст
-            $
-        /xi', $line, $matches);
-
-        // Обработка атрибутов
-        $attrs = [];
-        if (!empty($matches[4])) {
-            preg_match_all('/(\w+)=("[^"]*"|\S+)/', $matches[4], $attrPairs);
-            foreach ($attrPairs[1] as $i => $name) {
-                $attrs[$name] = trim($attrPairs[2][$i], '"');
-            }
-        }
+		 $classes = isset($matches[4]) && !empty($matches[4]) ? trim(str_replace('.', ' ', $matches[4])) : '';
+		 $tag = !empty($matches[1]) ? $matches[1] : 'div';
 
         return [
-            'tag' => $matches[1] ?? 'div',
-            'id' => $matches[2] ?? '',
-            'classes' => $matches[3] ? explode('.', $matches[3]) : [],
-            'attrs' => $attrs,
-            'text' => $matches[5] ?? ''
-        ];
+			'tag' => $tag, // Используем тег явно или ничего, если не указан
+            'attr' => [
+				'id' => $matches[2] ?? '',
+				'name' => $matches[3] ?? '',
+				'class' => $classes
+				],
+            'attrs' => $matches[5] ?? '',
+            'text' => $matches[6] ?? ''
+			];
     }
+	
+	private function renderTag(array $node): string {
 
-    private function renderTag(array $node, array $stack): string {
-        $tag = $node['tag'];
-        $attrs = [];
-
-        if ($node['id']) {
-            $attrs[] = 'id="' . htmlspecialchars($node['id']) . '"';
+		if($node['tag'] == 'include'){
+			$text = $this->getTemplate($node['text']);
+			return New TagParse($text);
+		}
+        
+		$htmls = '<' . $node['tag'] . ' '; // Используем реальный тег, а не дефолтный div
+		if($node['tag'] == 'html') $htmls = "<!DOCTYPE html>\n" . $htmls;
+		
+        foreach ($node['attr'] as $name => $value) {
+			// Пропускаем пустые
+            if ($value === '') continue;
+            $htmls .= htmlspecialchars($name) . '="' . htmlspecialchars($value) . '" ';
+			
         }
-
-        if (!empty($node['classes'])) {
-            $attrs[] = 'class="' . htmlspecialchars(implode(' ', $node['classes'])) . '"';
-        }
-
-        foreach ($node['attrs'] as $name => $value) {
-            $attrs[] = htmlspecialchars($name) . '="' . htmlspecialchars($value) . '"';
-        }
-
-        $html = '<' . $tag . ($attrs ? ' ' . implode(' ', $attrs) : '') . '>';
-
-        if (!in_array($tag, self::VOID_TAGS)) {
-            $html .= htmlspecialchars($node['text']);
-        }
-
-        return $html;
+		$htmls .= $node['attrs'] . ">" . (!$this->isVoidTag($node['tag']) ? $node['text'] : '');
+		
+        return $htmls;
     }
 }
 
+/*
+
+// Пример использования
+$text = "
+		ul#main2/maig.menu
+			li.item Пункт 3
+			li.item.active Пункт 4
+";
+$inputs = "
+<!DOCTYPE html>
+html(lang='ru')
+  head
+    meta(charset='utf-8')
+    title Селекторное письмо
+	<!-- Невидимый коментарий -->
+  include ./header.php
+  body
+  <p>Этот текст будет в теге </p>
+		p.paragraph
+			img.image(src='picture.jpg' alt='Изображение')
+		a(href='/') ссылка
+ // Коментарий будет видимым в html
+		<!-- div class='class'>Этот элемент пропускается</div-->
+    div.class
+      ul#main1/mai.menu.menu2 ТЕКСТ
+        li.item 
+          a.link(href='/') Пункт 1
+        li.item.active Пункт 2
+        input.form-control(type='text' placeholder='Введите имя' value='поле')
+		include ./include.php
+		$text
+";
+$input = "
+include ./head.php
+";
+$input1 = "./head.php";
+
+echo New TagParse($inputs);
+*/
