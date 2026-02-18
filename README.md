@@ -120,7 +120,7 @@ $input = "input(type='email' required)";
 
 ```php
 <?php
-//tagparser.php
+//TagParser.php
 // 09.04.2025 автор Алексей Нечаев, г. Москва, +7(999)003-90-23, nechaev72@list.ru
 
 
@@ -216,7 +216,7 @@ class TagParser {
 
 		if($node['tag'] == 'include'){
 			$text = $this->getTemplate($node['text']);
-			return New TagParse($text);
+			return New TagParser($text);
 		}
         
 		$htmls = '<' . $node['tag'] . ' '; // Используем реальный тег, а не дефолтный div
@@ -355,10 +355,10 @@ div
 //   </div>
 // </div>
 ```
-# Документация класса TagParse
+# Документация класса TagParser
 
 ## Описание
-Класс `TagParse` предназначен для преобразования упрощенного синтаксиса (CSS-подобных селекторов) в валидный HTML. Поддерживает вложенность, комментарии, включение файлов и различные атрибуты.
+Класс `TagParser` предназначен для преобразования упрощенного синтаксиса (CSS-подобных селекторов) в валидный HTML. Поддерживает вложенность, комментарии, включение файлов и различные атрибуты.
 
 ## Синтаксис
 
@@ -387,7 +387,7 @@ div
 ```
 include ./путь/к/файлу.php
 ```
-Включает содержимое указанного файла. Файл может содержать как обычный HTML, так и синтаксис TagParse.
+Включает содержимое указанного файла. Файл может содержать как обычный HTML, так и синтаксис TagParser.
 
 ### Прямой HTML
 Любая строка, начинающаяся с `<`, вставляется как есть.
@@ -395,21 +395,21 @@ include ./путь/к/файлу.php
 ## Методы
 
 ### `__construct(string $input)`
-Создает новый объект TagParse. Принимает либо строку с шаблоном, либо путь к файлу.
+Создает новый объект TagParser. Принимает либо строку с шаблоном, либо путь к файлу.
 
 ```php
 // Из строки
-$parser = new TagParse("div.container Текст");
+$parser = new TagParser("div.container Текст");
 
 // Из файла
-$parser = new TagParse("./template.tpl");
+$parser = new TagParser("./template.tpl");
 ```
 
 ### `__toString(): string`
 Преобразует объект в строку HTML при выводе.
 
 ```php
-echo new TagParse($input); // Автоматически вызывает __toString()
+echo new TagParser($input); // Автоматически вызывает __toString()
 ```
 
 ## Примеры использования
@@ -423,7 +423,7 @@ div.container
   a.link(href='/') Ссылка
 ";
 
-echo new TagParse($template);
+echo new TagParser($template);
 ```
 **Результат:**
 ```html
@@ -443,7 +443,7 @@ form#login/contact-form(method='POST')
   button.btn.btn-primary(type='submit') Войти
 ";
 
-echo new TagParse($template);
+echo new TagParser($template);
 ```
 
 ### Пример 3: Сложная структура с комментариями
@@ -473,7 +473,7 @@ html(lang='ru')
       p &copy; 2024 Все права защищены
 ";
 
-echo new TagParse($template);
+echo new TagParser($template);
 ```
 
 ### Пример 4: Включение файлов
@@ -514,7 +514,7 @@ html
 ```
 
 ```php
-echo new TagParse("./main.tpl");
+echo new TagParser("./main.tpl");
 ```
 
 ### Пример 5: Переменная с шаблоном
@@ -532,7 +532,7 @@ div.page
   $footer
 ";
 
-echo new TagParse($template);
+echo new TagParser($template);
 ```
 
 ## Особенности
@@ -545,7 +545,7 @@ echo new TagParse($template);
 
 4. **Вложенность**: Автоматически закрываются все открытые теги
 
-5. **Гибкость**: Можно комбинировать обычный HTML и синтаксис TagParse
+5. **Гибкость**: Можно комбинировать обычный HTML и синтаксис TagParser
 
 ## Примечания
 - Для работы с файлами требуется, чтобы файлы существовали и были доступны для чтения
@@ -553,4 +553,4 @@ echo new TagParse($template);
 - Можно использовать переменные PHP внутри строки шаблона (как в примере 5)
 
 
-[GitHub Repository](https://github.com/yourname/tagparser) | [Документация](#документация) | [Примеры](#примеры)
+[GitHub Repository](https://github.com/yourname/TagParser) | [Документация](#документация) | [Примеры](#примеры)
