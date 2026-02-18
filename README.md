@@ -20,7 +20,7 @@ MIT License. Свободное использование и модификац
 
 ## Слайд 2: Синтаксис
 ```css
-div#header.main[data-role='banner']
+div#header.main(data-role='banner')
   ul.nav
     li Домой
     li О нас
@@ -118,109 +118,121 @@ $input = "input[type='email' required]";
 Реализуем такой парсер на PHP. Он будет обрабатывать синтаксис вида `tag.class#id[attr="value"] Текст` с поддержкой вложенности через отступы (2 или 4 пробела).
 
 ```php
-class TagParser {
-    // Теги без закрывающего элемента (void elements)
-    const VOID_TAGS = [
-        'area', 'base', 'br', 'col', 'embed', 'hr', 'img',
-        'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'
-    ];
+<?php
+//tagparser.php
+// 09.04.2025 автор Алексей Нечаев, г. Москва, +7(999)003-90-23, nechaev72@list.ru
 
-    public function parse(string $input): string {
+
+class TagParse {
+   const VOID_TAGS = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+    private $html;
+	
+	public function __toString(): string {
+        return $this->html;
+    }
+	
+	private function isVoidTag(string $tag): bool {
+        return in_array($tag, static::VOID_TAGS);
+    }
+	
+	// определяем это путь к файлу в котором строка или строка из переменной
+	private function getTemplate(string $shablon)
+	{
+		 // Если файл существует - читаем его
+		 if(file_exists($shablon)) $shablon = file_get_contents($shablon);
+		return $shablon;
+	 }
+
+    public function __construct(string $input) {
+		$input = $this->getTemplate($input);
         $lines = explode("\n", trim($input));
         $stack = [];
-        $prevIndent = 0;
-        $output = '';
+        $this->html = '';
 
         foreach ($lines as $line) {
-            // Пропускаем пустые строки
-            if (trim($line) === '') continue;
-
+			 #$line = trim($line);
+			// Пропускаем пустые строки
+            if (trim($line) === '' || strpos($line, "<!--") || strpos($line, "-->")) continue;
+			// Коментарии
+			if(strpos(' ' . $line, '//')) {
+				$this->html .= "\n<!-- " . trim(str_replace('//', '', $line)) . " -->";
+				continue;
+			}
+			// пропускаем HTML
+			if(trim($line)[0] == '<') {
+				$this->html .= "\n" . $line;
+				continue;
+			}
+			
             // Определяем уровень вложенности
             preg_match('/^(\s*)/', $line, $matches);
-            //$indent = strlen($matches[1]);
-			$indent = strlen(str_replace("\t", "  ", $matches[1])); // 1 таб = 2 пробела
-            $content = trim($line);
+			$space = str_replace("\t", "  ", $matches[1]);
+            $indent = strlen($space);
 
-            // Закрываем предыдущие теги при уменьшении вложенности
-            while ($indent < $prevIndent) {
-                array_pop($stack);
-                $prevIndent -= 2;
+			// Закрываем теги при снижении уровня вложенности
+            while ($indent < (count($stack) * 2)) {
+                $this->html .= '</' . array_pop($stack) . '>';
             }
-
-            // Парсим текущую строку
-            $node = $this->parseLine($content);
-            $output .= $this->renderTag($node, $stack);
-
-            // Добавляем в стек если тег не void
-            if (!in_array($node['tag'], self::VOID_TAGS)) {
-                array_push($stack, $node['tag']);
-                $prevIndent += 2;
-            }
+			
+			// Парсим текущую строку
+            $node = $this->parseLine(trim($line));
+      
+			// Генерация HTML-кода
+            $this->html .= "\n" . $space . $this->renderTag($node);		
+		
+			if (!$this->isVoidTag($node['tag']) && $node['tag'] !== 'include') {
+				array_push($stack, $node['tag']);
+			}
         }
 
         // Закрываем оставшиеся теги
         while (!empty($stack)) {
-            $output .= '</' . array_pop($stack) . '>';
+            $this->html .= "</" . array_pop($stack) . ">\n";
         }
-
-        return $output;
     }
+	
+	private function parseLine(string $line): array {
+        // Парсим строку с помощью регулярного выражения
+					  # Тег         #ID            /name         .Классы         (Атрибуты)     пробел Текст
+       	preg_match('/^(?:([a-z0-9]+))?(?:#([\w-]+))?(?:\/([\w-]+))?(?:\.([\w.-]+))?(?:\((.*?)\))?(?:\s+(.*))?$/i', $line, $matches);
 
-    private function parseLine(string $line): array {
-        // Регулярка для разбора строки
-        preg_match('/
-            ^
-            (?:([a-z]+))?                # Тег
-            (?:#([\w-]+))?               # ID
-            (?:\.([\w.-]+))?             # Классы
-            (?:\[(.*?)\])?               # Атрибуты
-            (?:\s+(.+))?                 # Текст
-            $
-        /xi', $line, $matches);
-
-        // Обработка атрибутов
-        $attrs = [];
-        if (!empty($matches[4])) {
-            preg_match_all('/(\w+)=("[^"]*"|\S+)/', $matches[4], $attrPairs);
-            foreach ($attrPairs[1] as $i => $name) {
-                $attrs[$name] = trim($attrPairs[2][$i], '"');
-            }
-        }
+		 $classes = isset($matches[4]) && !empty($matches[4]) ? trim(str_replace('.', ' ', $matches[4])) : '';
+		 $tag = !empty($matches[1]) ? $matches[1] : 'div';
 
         return [
-            'tag' => $matches[1] ?? 'div',
-            'id' => $matches[2] ?? '',
-            'classes' => $matches[3] ? explode('.', $matches[3]) : [],
-            'attrs' => $attrs,
-            'text' => $matches[5] ?? ''
-        ];
+			'tag' => $tag, // Используем тег явно или ничего, если не указан
+            'attr' => [
+				'id' => $matches[2] ?? '',
+				'name' => $matches[3] ?? '',
+				'class' => $classes
+				],
+            'attrs' => $matches[5] ?? '',
+            'text' => $matches[6] ?? ''
+			];
     }
+	
+	private function renderTag(array $node): string {
 
-    private function renderTag(array $node, array $stack): string {
-        $tag = $node['tag'];
-        $attrs = [];
-
-        if ($node['id']) {
-            $attrs[] = 'id="' . htmlspecialchars($node['id']) . '"';
+		if($node['tag'] == 'include'){
+			$text = $this->getTemplate($node['text']);
+			return New TagParse($text);
+		}
+        
+		$htmls = '<' . $node['tag'] . ' '; // Используем реальный тег, а не дефолтный div
+		if($node['tag'] == 'html') $htmls = "<!DOCTYPE html>\n" . $htmls;
+		
+        foreach ($node['attr'] as $name => $value) {
+			// Пропускаем пустые
+            if ($value === '') continue;
+            $htmls .= htmlspecialchars($name) . '="' . htmlspecialchars($value) . '" ';
+			
         }
-
-        if (!empty($node['classes'])) {
-            $attrs[] = 'class="' . htmlspecialchars(implode(' ', $node['classes'])) . '"';
-        }
-
-        foreach ($node['attrs'] as $name => $value) {
-            $attrs[] = htmlspecialchars($name) . '="' . htmlspecialchars($value) . '"';
-        }
-
-        $html = '<' . $tag . ($attrs ? ' ' . implode(' ', $attrs) : '') . '>';
-
-        if (!in_array($tag, self::VOID_TAGS)) {
-            $html .= htmlspecialchars($node['text']);
-        }
-
-        return $html;
+		$htmls .= $node['attrs'] . ">" . (!$this->isVoidTag($node['tag']) ? $node['text'] : '');
+		
+        return $htmls;
     }
 }
+
 ```
 
 
@@ -228,14 +240,13 @@ class TagParser {
 
 ```PHP
 $input = "
-ul.menu#main
+ul#main.menu
   li.item Пункт 1
   li.item.active Пункт 2
   input[type='text' placeholder='Введите имя']
 ";
 
-$parser = new TagParser();
-echo $parser->parse($input);
+echo new TagParser($input);
 ```
 
 ### Результат:
@@ -289,8 +300,8 @@ ul.tree
     span Папка 3
 ";
 
-$parser = new TagParser();
-echo $parser->parse($input);
+echo  new TagParser($input);
+
 ```
 
 **Результат:**
@@ -342,210 +353,202 @@ div
 //   </div>
 // </div>
 ```
+# Документация класса TagParse
 
-### Ограничения и улучшения:
-1. **Табы vs пробелы:** Сейчас парсер считает только пробелы. Для поддержки табов замените:
-   ```php
-   $indent = strlen(str_replace("\t", "  ", $matches[1])); // 1 таб = 2 пробела
-   ```
-2. **Ошибки формата:** Некорректные отступы (например, 3 пробела) могут нарушить структуру.
-3. **Экранирование:** Текст автоматически экранируется через `htmlspecialchars()`.
+## Описание
+Класс `TagParse` предназначен для преобразования упрощенного синтаксиса (CSS-подобных селекторов) в валидный HTML. Поддерживает вложенность, комментарии, включение файлов и различные атрибуты.
 
-Такой парсер подходит для большинства базовых сценариев. Для сложных проектов лучше использовать `phug/pug`, но этот вариант отлично работает как легковесное решение.
+## Синтаксис
 
-Вот пример таблицы с объединенными ячейками, обработанной нашим парсером:
+### Базовый синтаксис строки
+```
+тег#id/name.класс1.класс2(атрибуты) текст
+```
+
+| Часть | Описание | Пример |
+|-------|----------|--------|
+| `тег` | HTML-тег (если не указан, используется div) | `div`, `p`, `a` |
+| `#id` | ID элемента | `#main` |
+| `/name` | Атрибут name | `/username` |
+| `.класс` | Класс(ы) элемента | `.menu.active` |
+| `(атрибуты)` | Дополнительные атрибуты | `(href='/')`, `(type='text' placeholder='Имя')` |
+| `текст` | Текстовое содержимое | `Пункт 1` |
+
+### Отступы
+Уровень вложенности определяется количеством пробелов (2 пробела = 1 уровень вложенности). Также поддерживаются табуляции.
+
+### Комментарии
+- `// текст` - видимый HTML-комментарий (`<!-- текст -->`)
+- `<!-- текст -->` - игнорируемая строка (пропускается)
+
+### Включение файлов
+```
+include ./путь/к/файлу.php
+```
+Включает содержимое указанного файла. Файл может содержать как обычный HTML, так и синтаксис TagParse.
+
+### Прямой HTML
+Любая строка, начинающаяся с `<`, вставляется как есть.
+
+## Методы
+
+### `__construct(string $input)`
+Создает новый объект TagParse. Принимает либо строку с шаблоном, либо путь к файлу.
 
 ```php
-$input = "
-table.table-style[border='1']
-  thead
-    tr
-      th[colspan='2'] Основной заголовок
-  tbody
-    tr
-      td[rowspan='2'] Объединенная ячейка
-      td Ячейка 1
-    tr
-      td Ячейка 2
-    tr
-      td[colspan='2'] Нижний заголовок
+// Из строки
+$parser = new TagParse("div.container Текст");
+
+// Из файла
+$parser = new TagParse("./template.tpl");
+```
+
+### `__toString(): string`
+Преобразует объект в строку HTML при выводе.
+
+```php
+echo new TagParse($input); // Автоматически вызывает __toString()
+```
+
+## Примеры использования
+
+### Пример 1: Базовая структура
+```php
+$template = "
+div.container
+  h1 Заголовок
+  p.lead Ведущий текст
+  a.link(href='/') Ссылка
 ";
 
-$parser = new TagParser();
-echo $parser->parse($input);
-```
-
-**Результат выполнения:**
-```html
-<table class="table-style" border="1">
-  <thead>
-    <tr>
-      <th colspan="2">Основной заголовок</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td rowspan="2">Объединенная ячейка</td>
-      <td>Ячейка 1</td>
-    </tr>
-    <tr>
-      <td>Ячейка 2</td>
-    </tr>
-    <tr>
-      <td colspan="2">Нижний заголовок</td>
-    </tr>
-  </tbody>
-</table>
-```
-
-### Как добавить сложные атрибуты:
-1. **Объединение колонок**  
-   ```css
-   td[colspan='3']
-   ```
-2. **Объединение строк**  
-   ```css
-   td[rowspan='2']
-   ```
-3. **Смешанные атрибуты**  
-   ```css
-   td[data-id='5'][class='special']
-   ```
-
-### Особенности реализации:
-1. Поддерживается любая вложенность:
-   ```php
-   table
-     tr
-       td
-         div.wrapper
-           span.icon
-           p.text
-   ```
-2. Автоматическое закрытие тегов для:
-   - `<table>`
-   - `<tr>`
-   - `<td>`/`<th>`
-   - `<thead>`/`<tbody>`
-
-Для работы с таблицами парсер корректно обрабатывает все стандартные HTML-атрибуты. Это решение подходит для генерации сложных табличных структур без ручного написания HTML.
-
-
-
-
-
-# Документация для класса `TagParser`
-
-## Оглавление
-1. [Введение](#введение)
-2. [Установка](#установка)
-3. [Базовое использование](#базовое-использование)
-4. [Синтаксис](#синтаксис)
-5. [Расширенные возможности](#расширенные-возможности)
-6. [Обработка ошибок](#обработка-ошибок)
-7. [Примеры](#примеры)
-8. [Ограничения](#ограничения)
-9. [Лицензия](#лицензия)
-
----
-
-## Введение <a name="введение"></a>
-`TagParser` — это PHP-класс для преобразования текстового синтаксиса (в стиле CSS-селекторов) в валидный HTML. Поддерживает:
-- Вложенность через **отступы** (2 пробела или 1 таб)
-- CSS-классы, ID, атрибуты
-- Автоматическое закрытие тегов
-- Void-элементы (`<img>`, `<input>` и др.)
-
----
-
-## Установка <a name="установка"></a>
-Просто скопируйте класс в ваш проект:
-```php
-require_once 'TagParser.php';
-```
-
----
-
-## Базовое использование <a name="базовое-использование"></a>
-```php
-$input = "
-ul.menu#main
-  li.item Пункт 1
-  li.item.active Пункт 2
-";
-
-$parser = new TagParser();
-echo $parser->parse($input);
-```
-
-**Результат:**
-```html
-<ul id="main" class="menu">
-  <li class="item">Пункт 1</li>
-  <li class="item active">Пункт 2</li>
-</ul>
-```
-
----
-
-
-
-## Обработка ошибок <a name="обработка-ошибок"></a>
-Класс выбрасывает исключения в случаях:
-- Неправильной вложенности (например, пропуск уровня)
-- Некорректных атрибутов (например, `attr='value`)
-
-**Пример обработки:**
-```php
-try {
-    $parser->parse($input);
-} catch (TagParserException $e) {
-    echo "Ошибка: " . $e->getMessage();
-}
-```
-
----
-
-## Примеры <a name="примеры"></a>
-### Пример 1: Форма
-```php
-$input = "
-form#login[action='/auth']
-  input[type='text' name='login']
-  input[type='password' name='pass']
-  button.btn[type='submit'] Войти
-";
-
-echo $parser->parse($input);
+echo new TagParse($template);
 ```
 **Результат:**
 ```html
-<form id="login" action="/auth">
-  <input type="text" name="login">
-  <input type="password" name="pass">
-  <button class="btn" type="submit">Войти</button>
-</form>
+<div class="container">
+  <h1>Заголовок</h1>
+  <p class="lead">Ведущий текст</p>
+  <a class="link" href="/">Ссылка</a>
+</div>
 ```
 
-### Пример 2: Медиа-объект
+### Пример 2: Форма с атрибутами
 ```php
-$input = "
-div.media
-  img.thumb[src='avatar.jpg']
-  div.content
-    h3 Заголовок
-    p Текст
+$template = "
+form#login/contact-form(method='POST')
+  input.form-control(type='text' name='username' placeholder='Логин')
+  input.form-control(type='password' name='password' placeholder='Пароль')
+  button.btn.btn-primary(type='submit') Войти
 ";
+
+echo new TagParse($template);
 ```
 
----
+### Пример 3: Сложная структура с комментариями
+```php
+$template = "
+<!DOCTYPE html>
+html(lang='ru')
+  head
+    meta(charset='utf-8')
+    title Моя страница
+  body
+    // Это видимый комментарий
+    header#header
+      .logo Логотип
+      nav
+        ul.menu
+          li.active
+            a(href='/') Главная
+          li
+            a(href='/about') О нас
+    main.container
+      article
+        h1 Добро пожаловать!
+        p.lead Рады видеть вас на нашем сайте
+    <!-- Скрытый комментарий, не попадёт в HTML -->
+    footer
+      p &copy; 2024 Все права защищены
+";
 
-## Ограничения <a name="ограничения"></a>
-- Нет поддержки самозакрывающихся тегов (кроме void-элементов)
-- Нельзя использовать `:` в именах классов/ID
-- Максимальная глубина вложенности: 20 уровней
+echo new TagParse($template);
+```
 
----
+### Пример 4: Включение файлов
+
+**header.php:**
+```php
+<header>
+  <nav>
+    <ul class="menu">
+      <li><a href="/">Главная</a></li>
+      <li><a href="/about">О нас</a></li>
+    </ul>
+  </nav>
+</header>
+```
+
+**include.php:**
+```php
+div.widget
+  h3 Виджет
+  p Содержимое виджета
+```
+
+**main.tpl:**
+```php
+<!DOCTYPE html>
+html
+  head
+    title Сайт
+  body
+    include ./header.php
+    main.content
+      h1 Главная страница
+      p Текст контента
+    include ./include.php
+    footer
+      p Подвал сайта
+```
+
+```php
+echo new TagParse("./main.tpl");
+```
+
+### Пример 5: Переменная с шаблоном
+```php
+$footer = "
+footer
+  .container
+    p &copy; 2024
+";
+
+$template = "
+div.page
+  header Шапка
+  main Контент
+  $footer
+";
+
+echo new TagParse($template);
+```
+
+## Особенности
+
+1. **Самозакрывающиеся теги**: `area`, `base`, `br`, `col`, `embed`, `hr`, `img`, `input`, `link`, `meta`, `param`, `source`, `track`, `wbr` - не требуют закрывающего тега
+
+2. **Спецсимволы**: Текст автоматически экранируется через `htmlspecialchars()`
+
+3. **Атрибуты**: Значения атрибутов автоматически экранируются
+
+4. **Вложенность**: Автоматически закрываются все открытые теги
+
+5. **Гибкость**: Можно комбинировать обычный HTML и синтаксис TagParse
+
+## Примечания
+- Для работы с файлами требуется, чтобы файлы существовали и были доступны для чтения
+- При использовании include, путь указывается относительно текущего файла
+- Можно использовать переменные PHP внутри строки шаблона (как в примере 5)
 
 
 [GitHub Repository](https://github.com/yourname/tagparser) | [Документация](#документация) | [Примеры](#примеры)
