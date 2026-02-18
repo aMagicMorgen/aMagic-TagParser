@@ -70,9 +70,9 @@ div#header.container[data-role='main'] Заголовок
 | Тег           | `div`               | `<div>`                       |
 | ID            | `#main`             | `id="main"`                   |
 | Классы        | `.btn.large`        | `class="btn large"`           |
-| Атрибуты      | `[data-id='5']`     | `data-id="5"`                 |
+| Атрибуты      | `(data-id='5')`     | `data-id="5"`                 |
 | Текст         | `Текст`             | `>Текст</tag>`                |
-| Void-элементы | `img[src='pic.jpg']`| `<img src="pic.jpg">`         |
+| Void-элементы | `img(src='pic.jpg')`| `<img src="pic.jpg">`         |
 
 ---
 
