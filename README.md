@@ -58,7 +58,7 @@ div#header.main(data-role='banner')
 ```
 #### Пример
 ```
-div#header.container[data-role='main'] Заголовок
+div#header/name.container[data-role='main'] Заголовок
     ^^     ^            ^                 ^
     |      |            |                 |
     отступы          атрибуты           текст
@@ -69,6 +69,7 @@ div#header.container[data-role='main'] Заголовок
 |---------------|---------------------|-------------------------------|
 | Тег           | `div`               | `<div>`                       |
 | ID            | `#main`             | `id="main"`                   |
+| name          | '/name'             | 'name="name"'                 |
 | Классы        | `.btn.large`        | `class="btn large"`           |
 | Атрибуты      | `(data-id='5')`     | `data-id="5"`                 |
 | Текст         | `Текст`             | `>Текст</tag>`                |
