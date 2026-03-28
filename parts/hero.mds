@@ -1,0 +1,32 @@
+{CLASS}.clr3
+{ВЕРХ}              ВЕРХ3
+{ЗАГОЛОВОК}      ЗАГОЛОВОК3
+{ПОДЗАГОЛОВОК}ПОДЗАГОЛОВОК НОВЫЙ3
+{TEXTMD}### <span style="color: white;">TEXTMD3</span>
+{ЛЕВЫЙ}ЛЕВЫЙ3                 {ПРАВЫЙ}ПРАВЫЙ3
+{КНОПКА}(href="/") КНОПКА
+!!!!
+br
+br
+section.hero{CLASS}.mb-4.rounded-xl
+	.heroh
+		p.th1.tc {ВЕРХ}
+	.herob.tc
+		.block
+			p.t6.clr5 {ЗАГОЛОВОК}
+		.block
+			p.ts3 {ПОДЗАГОЛОВОК}
+	.herof.tc
+		MD/
+{TEXTMD}
+		/MD
+		.l.is-mobile
+			.ll
+				p.ts1.p-5 {ЛЕВЫЙ}
+			
+			.li
+				a.btn.clr2.round{КНОПКА}
+			
+			.lr
+				p.ts1.tr.p-5 {ПРАВЫЙ}
+						

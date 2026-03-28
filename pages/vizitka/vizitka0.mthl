@@ -1,0 +1,111 @@
+{title}ООО «ЛИК» — карточка организации
+{TEMPLATES} ./pages/vizitka/templates
+{PARTS} ./pages/vizitka/parts
+!!!!
+html(lang="ru")
+	head
+		title $title
+		<!-- Google Font & simple reset -->
+		link(rel="preconnect"(href="https://fonts.googleapis.com")
+		link(rel="preconnect"(href="https://fonts.gstatic.com" crossorigin)
+		link(href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet")
+		link(href="./pages/vizitka/visitka.css" rel="stylesheet")
+
+	body
+		.company-card 
+			.brand-strip 
+			.card-content
+<!-- шапка с основным телефоном -->			
+				_/
+{BREND-BREND}BRAND-TEXT|BRAND-TITLE
+ООО «ЛИК» |монтаж газового оборудования, отопления, дымоходов и вентиляции
+{BREND-TEL}FONE-TEXT|FONE-NUM
+основной телефон    |+7(916)161-37-20
+||||
+include $TEMPLATES/BODY-HEADER.mth
+				<!-- Делим на колонки -->
+				.info-grid
+					<!--ЛЕВАЯ колонка:-->
+					.contact-section 
+						_/
+{АДРЕС}       Московская обл., г. Подольск, ул. Комсомольская, д. 61, оф. 4211
+{EMAIL}       leik70@mail.ru
+{ГРАФИК-РАБОТЫ}пн–пт, 9:00 – 17:00
+{FONES}TEXT  |FONE
+(бухгалтерия)|+7 495 926-21-60 
+(офис)       |+7 496 755-41-60 
+{САЙТ}likgaz.ru
+{САЙТЫ}
+SPAN|HREF
+·   | likpodolsk.ru
+·   | checko.ru
+·   | my.mail.ru/community
+||||
+include $TEMPLATES/BODY-CONTAKT.mth
+					<!-- ПРАВАЯ колонка: услуги  виды деятельности -->
+					_/
+{LIST}
+TAG | РАБОТЫ
+li  | Монтаж газопроводов, систем отопления, дымоходов, вентканалов
+li  | Пусконаладка газового оборудования
+li  | Сварочные работы
+li  | Обследование дымоходов / вентиляции (акты для газового хозяйства)
+li  | Монтаж и замеры контура заземления, молниезащиты
+li  | Установка сигнализаторов загазованности
+li  | Работа по договору со всеми документами и актами
+{BADGE}
+📄 Оформление документов для «Мособлгаза»: акты, техотчёты
+||||
+include $TEMPLATES/BODY-INFO.mth
+				
+				<!-- Лицензии и свидетельства -->
+				.license-row 
+					.license-item 
+						strong 🔹 Лицензия МЧС 
+						strong 📄 50-Б/01256 от 14 декабря 2011 г.
+					
+					.license-item 
+						strong 🔹 Электролаборатория 
+						strong 📄 Свидетельство №5.3-6541 от 15 октября 2024 г.
+						
+					
+				 <!-- конец info-grid -->
+
+				<!-- БЛОК ФОТОГРАФИЙ (Yandex preview) -->
+				.photos-section 
+					h2 Объекты и работы
+					.photo-grid 
+						<!-- ровно 6 ссылок на изображения из профиля Яндекс, как в исходных данных -->
+						.photo-item
+							img(src="https://avatars.mds.yandex.net/get-altay/5449087/2a0000017f253da60cab0d5762005b85c227/320x320" alt="газ. оборудование 1" loading="lazy")
+						.photo-item
+							img(src="https://avatars.mds.yandex.net/get-altay/5488055/2a0000017f253d555ead5c19a7514d0ef996/320x320" alt="монтаж дымохода" loading="lazy") 
+						.photo-item
+							img(src="https://avatars.mds.yandex.net/get-altay/4971637/2a0000017f253c3d22d7be9145b264fdd599/320x320" alt="вентиляция" loading="lazy") 
+						.photo-item
+							img(src="https://avatars.mds.yandex.net/get-altay/6236523/2a0000017f253cc0af2def5f23d019f718d9/320x320" alt="котельная" loading="lazy") 
+						.photo-item
+							img(src="https://avatars.mds.yandex.net/get-altay/5459048/2a0000017f253d0f5c12db33aeeb33310d7f/320x320" alt="заземление" loading="lazy") 
+						.photo-item
+							img(src="https://avatars.mds.yandex.net/get-altay/1047383/2a00000185ed52b6df1807c25bc69369c49d/320x320" alt="дымоход" loading="lazy") 
+					
+
+					<!-- ссылка на Яндекс.Профиль (табличка) -->
+					.yandex-profile 
+						a(href="https://yandex.ru/profile/112543582582" target="_blank 
+							span ⭐ Яндекс Карты: профиль «ЛиК» ↗
+
+				<!-- нижняя часть с уточнениями и ссылками на источники -->
+				.footnote 
+					span 📌 ОГРН 1035007221138
+					span 📌 лицензия МЧС: 50-Б/01256
+					span 📌 электролаборатория рег. №5.3-6541
+					span(style="margin-left: auto;") 🔍 данные из открытых источников
+				
+
+				<!-- микро-разметка скрытая, но текстовая ссылка на md источники -->
+				hr
+				div(style="font-size: 0.75rem; color: #6d8aa8; display: flex; gap: 15px; flex-wrap: wrap;") 
+					span 🔸 +7 916 161-37-20 принадлежит ООО «ЛИК» (Подольск)
+					span 🔸 монтаж / отопление / газ / дымоходы / вентиляция
+			.brand-strip 

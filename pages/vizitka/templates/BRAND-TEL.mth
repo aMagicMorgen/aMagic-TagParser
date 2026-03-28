@@ -1,0 +1,7 @@
+FONE-TEXT        |FONE-NUM
+[основной телефон|+7 916 161-37-20]
+!!!!
+.main-phone
+	span $FONE-TEXT
+	strong
+		a(href ="tel:$FONE-NUM") $FONE-NUM

@@ -1,0 +1,100 @@
+{ID}md2
+
+{CARD-HEADER}
+BI | SPAN
+[.bi.bi-hash
+|MD1
+]
+
+{CARD-INFO}
+BI |TEXT
+[
+.bi.bi-pin-angle-fill
+|Работает и с переменными: справа может быть вариант 
+«переменные в фигурных скобках», 
+но наоборот — переменная без скобок, значения в фигурных.
+]
+
+
+{CARD-BODY}
+H3 | P
+[
+Синтаксис похож на PUG, добавлен атрибут name
+|Селектор записывается через / после #(id селектора). 
+Пример: tag#id/name.class1.class2(attr) text. 
+Если не указан тег — подразумевается div.
+]
+
+
+
+{CARD-FOOTER}
+BI | TEXT
+[.bi.bi-info-circle
+|Пробелы в начале — табуляция задаёт вложенность.
+]
+
+
+{CARD-CONTENT}
+CODE-NAME  |CODE | CODE1| CODE2
+[ MDS      |
+h1#title/main.class1.class2 
+	i курсивный текст
+	span lorem text
+|
+		pre	
+			<code>
+		Rfrjqnj ddfkjjk kjh jkj hjkjhjk jkhjkjhjkjh hjkjh
+			</code>
+|
+]
+[Вывод HTML|
+&lt;h1 id="title" class="class1 class2" name="main"&gt;
+    &lt;i&gt;курсивный текст&lt;/i&gt;
+    &lt;span&gt;lorem text&lt;/span&gt;
+&lt;/h1&gt;
+|
+|
+]
+
+
+!!!!
+
+#$ID.card.card-tutorial.p-4.mb-4
+	_/[CARD-HEADER]
+/%
+span.section-tag
+	i$BI
+	span $SPAN
+%/
+	_/[CARD-INFO]
+/%
+p.markdown-hint
+	i$BI.me-2 $TEXT
+%/
+	_/[CARD-BODY]
+/%
+h3.fw-semibold $H3
+p $P
+%/	
+	.row.g-3 /* сделаем колонки */
+		_/[CARD-CONTENT]
+/%
+.col
+	.example-label $CODE-NAME
+	pre
+		<code>
+[CODE]
+		</code>
+
+	[CODE1]
+	[CODE2]
+
+%/
+	_/[CARD-FOOTER]
+/%				
+p.mt-3.small
+	i$BI
+	span $TEXT
+%/
+
+

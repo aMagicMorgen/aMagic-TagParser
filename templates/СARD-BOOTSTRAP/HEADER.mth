@@ -1,0 +1,6 @@
+/*CARD-HEADER*/
+{ID}md1{BI-HEADER}.bi.bi-hash {SPAN}MD1-ПРОВЕРКА  
+!!!!
+span.section-tag
+	i$BI-HEADER
+	span $SPAN

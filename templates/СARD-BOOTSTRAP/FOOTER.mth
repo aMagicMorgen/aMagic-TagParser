@@ -1,0 +1,9 @@
+/*CARD-FOOTER*/
+{BI-FOOTER}.bi.bi-info-circle
+{TEXT-FOOTER}
+Пробелы в начале — табуляция задаёт вложенность.
+ 
+!!!!
+p.mt-3.small
+	i$BI-FOOTER
+	span $TEXT-FOOTER

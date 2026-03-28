@@ -1,0 +1,110 @@
+{title}ООО «ЛИК» — карточка организации
+
+/* можно обозначить в переменную папку с шаблонами */
+{TEMPLATES} ./pages/vizitka/templates
+
+/* можно обозначить в переменную папку с готовыми кусками */
+{PARTS} ./pages/vizitka/parts
+/* это 4 ! разделитель переменнях от контента */
+!!!!
+html(lang="ru")
+	head
+	/* Переменная для замены в одну строку */
+		title $title
+		<!-- Google Font & simple reset -->
+		link(rel="preconnect"(href="https://fonts.googleapis.com")
+		link(rel="preconnect"(href="https://fonts.gstatic.com" crossorigin)
+		link(href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet")
+		link(href="./pages/vizitka/visitka.css" rel="stylesheet")
+
+	body
+		.company-card 
+			.brand-strip 
+			.card-content
+<!-- шапка с основным телефоном -->	
+/* ставим знак вставки шаблона или контента */		
+				_/
+/* Пишем переменные из шаблона или просто копируем их из шаблона и меняем значения */
+{BREND-BREND}BRAND-TEXT|BRAND-TITLE
+ООО «ЛИК» |монтаж газового оборудования, отопления, дымоходов и вентиляции
+
+{BREND-TEL}FONE-TEXT|FONE-NUM
+основной телефон    |+7(916)161-37-20
+
+/* это 4 | Разделитель для шаблонов */
+||||
+/* Делаем вставку фала шаблона */
+include $TEMPLATES/BODY-HEADER.mth
+
+				<!-- Делим на колонки -->
+				.info-grid
+					<!--ЛЕВАЯ колонка:-->
+					.contact-section 
+						_/
+{АДРЕС}       Московская обл., г. Подольск, ул. Комсомольская, д. 61, оф. 4211
+{EMAIL}       leik70@mail.ru
+{ГРАФИК-РАБОТЫ}пн–пт, 9:00 – 17:00
+{FONES}TEXT  |FONE
+(бухгалтерия)|+7 495 926-21-60 
+(офис)       |+7 496 755-41-60 
+{САЙТ}likgaz.ru
+{САЙТЫ}
+SPAN|HREF
+·   | likpodolsk.ru
+·   | checko.ru
+·   | my.mail.ru/community
+||||
+include $TEMPLATES/BODY-CONTAKT.mth
+					<!-- ПРАВАЯ колонка: услуги  виды деятельности -->
+					_/
+{LIST}
+TAG | РАБОТЫ
+li  | Монтаж газопроводов, систем отопления, дымоходов, вентканалов
+li  | Пусконаладка газового оборудования
+li  | Сварочные работы
+li  | Обследование дымоходов / вентиляции (акты для газового хозяйства)
+li  | Монтаж и замеры контура заземления, молниезащиты
+li  | Установка сигнализаторов загазованности
+li  | Работа по договору со всеми документами и актами
+{BADGE}
+📄 Оформление документов для «Мособлгаза»: акты, техотчёты
+||||
+include $TEMPLATES/BODY-INFO.mth
+
+/* ЗДЕСЬ ПРОСТО ВСТАВЛЯЕМ ГОТОВЫЕ БЛОКИ ИЗ ПАПКИ ./pages/vizitka/parts */
+<!-- Лицензии и свидетельства -->
+				_/
+{ПЕРЕМЕННАЯ} 50-Б/01256 от 14 декабря 2011 г.
+/%
+.license-row 
+	.license-item 
+		strong 🔹 Лицензия МЧС 
+		strong 📄 $ПЕРЕМЕННАЯ
+	
+	.license-item 
+		strong 🔹 Электролаборатория 
+		strong 📄 Свидетельство №5.3-6541 от 15 октября 2024 г.
+%/		
+				\\include $PARTS/BODY-LICENSE.mds
+/* Можно подключить и сам файл НО ЕСЛИ ТАМ html или php то ставим ЗНАК HTML/ вставляем как php 
+через <?php include ("..."); ?>  и затем закрываем /HTML    */				
+				include $PARTS/BODY-PHOTOS.mds
+				
+/* ВСАВИТЬ МОЖНО И ТАК ЕСЛИ БЕЗ ПЕРЕМЕННЫХ */ 				
+				\\include $PARTS/BODY-FOOTER.mds
+<!-- нижняя часть с уточнениями и ссылками на источники -->
+				_/
+.footnote 
+	span 📌 ОГРН 1035007221138
+	span 📌 лицензия МЧС: 50-Б/01256
+	span 📌 электролаборатория рег. №5.3-6541
+	span(style="margin-left: auto;") 🔍 данные из открытых источников
+
+
+<!-- микро-разметка скрытая, но текстовая ссылка на md источники -->
+hr
+div(style="font-size: 0.75rem; color: #6d8aa8; display: flex; gap: 15px; flex-wrap: wrap;") 
+	span 🔸 +7 916 161-37-20 принадлежит ООО «ЛИК» (Подольск)
+	span 🔸 монтаж / отопление / газ / дымоходы / вентиляция
+/_
+			.brand-strip 

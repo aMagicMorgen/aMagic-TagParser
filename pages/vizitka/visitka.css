@@ -1,0 +1,355 @@
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e9eef2 0%, #dbe1e6 100%);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* главная карточка */
+        .company-card {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px -10px rgba(0, 20, 30, 0.3), 0 8px 20px -8px rgba(0, 40, 50, 0.2);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* верхняя акцентная полоса (фирменный стиль) */
+        .brand-strip {
+            height: 10px;
+            background: linear-gradient(90deg, #c0392b, #e67e22, #f1c40f, #2ecc71, #2980b9);
+        }
+
+        .card-content {
+            padding: 36px 40px 40px 40px;
+        }
+
+        /* заголовок и телефон */
+        .main-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            border-bottom: 2px solid #f0f4f8;
+            padding-bottom: 20px;
+        }
+
+        .org-name h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #1a2634;
+            line-height: 1.2;
+        }
+
+        .org-name .legal {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #52718c;
+            background: #ecf2f9;
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 40px;
+            margin-top: 10px;
+        }
+
+        .main-phone {
+            background: #f1f9ff;
+            padding: 14px 22px;
+            border-radius: 60px;
+            border: 1px solid #cbdae9;
+            box-shadow: 0 4px 8px rgba(0,35,70,0.04);
+        }
+
+        .main-phone span {
+            font-size: 1rem;
+            color: #3a5670;
+            font-weight: 500;
+            display: block;
+            line-height: 1.3;
+        }
+
+        .main-phone strong {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0b2a41;
+            letter-spacing: 1px;
+        }
+
+        /* информационная сетка 2 колонки */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr;
+            gap: 40px;
+            margin-bottom: 35px;
+        }
+
+        .contact-section {
+            background: #f8fafd;
+            border-radius: 28px;
+            padding: 24px 28px;
+            border: 1px solid #e4ecf3;
+        }
+
+        .contact-section h2, .services-section h2, .license-section h2, .photos-section h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #16344b;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contact-section h2:before {
+            content: "📞";
+            font-size: 1.6rem;
+        }
+
+        .contact-item {
+            margin-bottom: 22px;
+            padding-bottom: 18px;
+            border-bottom: 1px dashed #cfdeed;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .item-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #657f99;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .item-value {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #0a1e2c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .item-value a {
+            color: #1a4e7a;
+            text-decoration: none;
+            border-bottom: 1px dotted #9bb5cf;
+        }
+
+        .item-value a:hover {
+            color: #b12222;
+            border-bottom: 1px solid;
+        }
+
+        .extra-phones {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 8px;
+            background: #eef4fa;
+            padding: 12px 16px;
+            border-radius: 20px;
+        }
+
+        .extra-phone {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .extra-phone small {
+            font-weight: 400;
+            color: #4e6e8a;
+            margin-left: 6px;
+        }
+
+        .schedule {
+            background: #e1eefb;
+            border-radius: 18px;
+            padding: 12px 18px;
+            font-weight: 500;
+            color: #0f405c;
+        }
+
+        /* правая колонка — услуги */
+        .services-section {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 24px 28px;
+            border: 1px solid #e0eef9;
+            box-shadow: 0 12px 20px -16px rgba(20,40,60,0.2);
+        }
+
+        .services-section h2:before {
+            content: "⚙️";
+            font-size: 1.6rem;
+        }
+
+        .service-list {
+            list-style: none;
+            margin-bottom: 28px;
+        }
+
+        .service-list li {
+            padding: 10px 0 8px 28px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%232980b9" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>') left center no-repeat;
+            background-size: 18px;
+            font-weight: 470;
+            color: #1e3347;
+            border-bottom: 1px solid #e9f0f6;
+        }
+
+        .service-list li:last-child {
+            border-bottom: none;
+        }
+
+        .docs-badge {
+            background: #ebf4fa;
+            border-radius: 18px;
+            padding: 18px 16px;
+            margin: 20px 0 12px;
+            font-size: 0.95rem;
+            border-left: 4px solid #cc5a2a;
+        }
+
+        .license-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: #f2f7fc;
+            border-radius: 22px;
+            padding: 18px 20px;
+            margin: 18px 0 0;
+            font-size: 0.95rem;
+            border: 1px solid #c8daea;
+        }
+
+        .license-item {
+            flex: 1 1 200px;
+        }
+
+        .license-item strong {
+            color: #003057;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* фотогалерея */
+        .photos-section {
+            margin-top: 40px;
+        }
+
+        .photos-section h2:before {
+            content: "🏭";
+            font-size: 1.8rem;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 14px;
+            margin: 20px 0 12px;
+        }
+
+        .photo-item {
+            border-radius: 24px;
+            overflow: hidden;
+            background: #d9e5f0;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 8px 18px -6px rgba(0,50,70,0.15);
+            transition: 0.2s;
+            border: 2px solid white;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 25px -10px #1a3f5c;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ссылка на Яндекс.Карты */
+        .yandex-profile {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+
+        .yandex-profile a {
+            background: #f2f2f2;
+            padding: 10px 22px;
+            border-radius: 40px;
+            color: #1f4f7a;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #bdd3e8;
+        }
+
+        .yandex-profile a:hover {
+            background: #e0ebf7;
+        }
+
+        /* нижние заметки */
+        .footnote {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #768b9e;
+            border-top: 1px solid #dbe3ed;
+            padding-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .ref-link {
+            color: #38658b;
+            text-decoration: none;
+            border-bottom: 1px dotted;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, #c0d5e8, transparent);
+            margin: 10px 0;
+        }
+
+        @media (max-width: 800px) {
+            .info-grid { grid-template-columns: 1fr; gap: 20px; }
+            .photo-grid { grid-template-columns: repeat(3, 1fr); }
+            .card-content { padding: 24px; }
+            .main-phone strong { font-size: 1.6rem; }
+        }
+
+        @media (max-width: 480px) {
+            .photo-grid { grid-template-columns: repeat(2, 1fr); }
+            .main-header { flex-direction: column; align-items: start; gap: 15px; }
+        }
+    </style>

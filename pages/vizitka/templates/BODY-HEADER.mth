@@ -1,0 +1,23 @@
+{BREND-BREND}
+BRAND-TEXT |BRAND-TITLE
+ООО «ЛИК» |монтаж газового оборудования, отопления, дымоходов и вентиляции
+{BREND-TEL}
+FONE-TEXT       |FONE-NUM
+основной телефон|+7 916 161-37-20
+!!!!
+.main-header
+	.org-name
+		_/[BREND-BREND]
+/%
+.org-name
+	h1 $BRAND-TEXT
+	span.legal $BRAND-TITLE
+%/
+	.main-phone
+		_/[BREND-TEL]
+/%
+span $FONE-TEXT
+	strong
+		a(href ="tel:$FONE-NUM") $FONE-NUM
+
+%/

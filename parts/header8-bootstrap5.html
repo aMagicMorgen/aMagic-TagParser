@@ -1,0 +1,36 @@
+<!-- Навигация Bootstrap 5 (чистая, без Bulma/Tailwind) -->
+  <nav class="navbar navbar-expand-lg navbar-glass fixed-top py-3">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-3 d-flex align-items-center gap-2" href="#">
+        <span class="bg-primary bg-gradient text-white px-3 py-1 rounded-4 fs-5">◈</span>
+        <span class="text-dark">aMagic MDS</span>
+        <!-- Оригинальный SVG логотип (немного уменьшен) -->
+        <svg width="44" height="28" viewBox="0 0 640 160" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-left: 4px;">
+          
+        </svg>
+      </a>
+
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+          <li class="nav-item"><a class="nav-link" href="#syntax"><i class="bi bi-code-square"></i>Синтаксис</a></li>
+          <li class="nav-item"><a class="nav-link" href="#variables"><i class="bi bi-braces"></i>Переменные</a></li>
+          <li class="nav-item"><a class="nav-link" href="#templates"><i class="bi bi-file-code"></i>Шаблоны</a></li>
+          <li class="nav-item"><a class="nav-link" href="#examples"><i class="bi bi-lightning"></i>Примеры</a></li>
+          <li class="nav-item"><a class="nav-link" href="#demos"><i class="bi bi-play-circle"></i>Демо</a></li>
+          <li class="nav-item ms-lg-3"><a class="btn btn-outline-primary rounded-pill px-4" href="#"><i class="bi bi-box-arrow-in-right"></i>Войти</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+		<style>
+			.navbar-glass {
+				background: rgba(255, 255, 255, 0.85);
+				backdrop-filter: blur(10px);
+				border-bottom: 1px solid rgba(0,0,0,0.05);
+				box-shadow: 0 4px 20px rgb(0 0 0 / 2%);
+			}
+		</style>

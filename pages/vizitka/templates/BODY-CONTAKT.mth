@@ -1,0 +1,58 @@
+{АДРЕС}Московская обл., г. Подольск, ул. Комсомольская, д. 61, оф. 421
+{EMAIL} leik70@mail.ru
+{ГРАФИК-РАБОТЫ}пн–пт, 9:00 – 17:00
+{FONES}
+TEXT         |FONE
+(бухгалтерия)|+7 495 926-21-60 
+(офис)       |+7 496 755-41-60 
+{САЙТ}likgaz.ru
+{САЙТЫ}
+SPAN|HREF
+·   | likpodolsk.ru
+·   | checko.ru
+·   | my.mail.ru/community
+
+!!!!
+
+h2 Контакты
+.contact-item 
+	.item-label 📍 Адрес
+	.item-value {АДРЕС}
+
+
+.contact-item 
+	.item-label 📧 Эл. почта
+	.item-value 
+		a(href="mailto:$EMAIL") $EMAIL
+
+
+.contact-item 
+	.item-label 🕒 Часы работы
+	.item-value $ГРАФИК-РАБОТЫ
+
+
+.contact-item 
+	.item-label 📞 дополнительные телефоны
+	.extra-phones 
+		_/[FONES]
+/%
+.extra-phone $FONE
+	small $TEXT
+%/
+.contact-item 
+	.item-label 🌐 Сайт
+	.item-value 
+		a(href="https://$САЙТ" target="_blank") $САЙТ
+
+
+<!-- ссылки на источники мелко (как сноски) -->
+div(style="margin-top: 16px; font-size: 0.75rem; color: #6c86a0;)
+	span 🔍 
+	_/[САЙТЫ]
+
+/%
+a.ref-link(href="$HREF") $HREF
+span $SPAN
+%/
+
+	

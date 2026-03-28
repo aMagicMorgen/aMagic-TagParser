@@ -1,0 +1,41 @@
+{HERO-HEAD}
+[0]
+/%
+h1.display-4.fw-semibold.mb-3
+	i.bi.bi-filetype-md
+	span MDS · MarkDownStyle
+p.lead.fs-4 Cелекторный язык разметки, вдохновлённый PUG. Переменные, шаблоны, вставки — чистота и скорость.
+%/
+
+{BADGE}	
+BI                | SPAN
+.bi.bi-puzzle     | Синтаксис: tag#id/name.class1.class2(attributes) Lorem 
+.bi.bi-braces     | ВТАВКИ Значений в ВСТАВКИ
+.bi.bi-box-seam   |includ e, циклы
+.bi.bi-filetype-md| Запись в текстовых файлах .md, .mds - MarkDownStyle
+/%
+span.badge-mds
+	i$BI
+	span $SPAN
+%/
+
+{PICTERS}
+[0]
+/%
+center
+	i.bi.bi-file-richtext(style="font-size: 10rem; opacity: 0.5; color: #b6d0f0;")
+%/
+
+!!!!
+<!-- Шапка -->
+.tutorial-header.py-5.mt-5
+	.container.py-2
+		.row.align-items-center.g-4
+			.col-lg-8
+				_/[HERO-HEAD]
+
+				.mt-5.d-flex.flex-wrap.gap-4
+					_/[BADGE]
+				
+			div.col-lg-4.text-lg-end
+				_/[PICTERS]

@@ -1,0 +1,59 @@
+{CLASS}clr2.fix
+{BREND-HREF}(href="#")
+{BREND1}MDS
+{BREND2}::style
+{START1}(href="#syntax") СИНТАКСИС
+{START2}(href="#variables") ПЕРЕМЕННЫЕ
+{START3}(href="#include") INCLUDE
+{START4}(href="#templates") ШАБЛОНЫ
+{END-HREF1}(href="#demo")
+{END1}ДЕМО
+{END-HREF2}(href="#")
+{END2}GITHUB
+!!!!
+nav.navbar.is-transparent{CLASS}(role="navigation" aria-label="main navigation")
+		.navbar-brand.mx-6
+			a.navbar-item{BREND-HREF}
+				span.is-size-4.has-text-weight-bold(style="color: #1b4a6b;") ◈ {BREND1}
+					span.has-text-grey-light {BREND2}
+			a.navbar-burger(role="button" aria-label="menu" aria-expanded="false" data-target="navbar"))
+				span(aria-hidden="true")
+				span(aria-hidden="true")
+				span(aria-hidden="true")
+				span(aria-hidden="true")
+		#navbar.navbar-menu
+			.navbar-start.ml-6
+				a.navbar-item.has-text-weight-medium{START1}
+				a.navbar-item.has-text-weight-medium{START2}
+				a.navbar-item.has-text-weight-medium{START3}
+				a.navbar-item.has-text-weight-medium{START4}
+			.navbar-end.mr-6
+				.navbar-item
+					.buttons
+						a.button.is-soft.is-small{END-HREF1}
+							i.fa-regular.fa-eye.mr-2
+							span {END1}
+						a.button.is-soft.is-small.is-light{END-HREF2}
+							i.fa-regular.fa-gem.mr-2
+							span {END2}
+	<style>
+	.button.is-soft {
+		background: white;
+		border: 1px solid #cdddee;
+		color: #1f4a6e;
+		font-weight: 600;
+		border-radius: 100px;
+		padding-left: 2rem;
+		padding-right: 2rem;
+		box-shadow: 0 4px 8px rgb(0 30 50 / 5%);
+		transition: all 0.2s;
+	}
+	*, ::after, ::before {
+		box-sizing: border-box;
+		border-width: 0;
+		border-style: solid;
+		border-color: #e5e7eb;
+	}
+	</style>
+script(src="./lib/aMagic/mds/nav.js")
+

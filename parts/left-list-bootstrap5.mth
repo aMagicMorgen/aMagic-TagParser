@@ -1,0 +1,33 @@
+{BI-PANEL}.bi.bi-list-ul.me-2
+{PANEL}УЧЕБНИК
+
+{PANEL-LIST}
+ BI       |HREF  | LIST
+.bi.bi-dot|md0   |Синтаксис MDS
+.bi.bi-dot|md1   |БЕЗ ШАБЛОНОВ
+.bi.bi-dot|md2   |ВИД ШАБЛОНА
+.bi.bi-dot|md3   |ПОСМОТРЕТЬ КОД
+.bi.bi-dot|md4   |КАК ПОДКЛЮЧИТЬ
+
+
+{BI-PANEL-FOOTER}.bi.bi-exclamation-triangle-fill.me-1.text-warning
+{PANEL-FOOTER}Все примеры из оригинального .mds
+
+!!!!
+
+.toc-sticky.ps-2
+	h5.fw-semibold.mb-3
+		i$BI-PANEL
+		span $PANEL
+	.list-group.list-group-toc
+		_/[PANEL-LIST]
+/%
+a.list-group-item.list-group-item-action(href="#$HREF")
+	i$BI
+	span $LIST
+%/
+
+	hr.my-4
+	p.small.text-secondary
+		i$BI-PANEL-FOOTER
+		span $PANEL-FOOTER

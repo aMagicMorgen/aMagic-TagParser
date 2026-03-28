@@ -1,0 +1,7 @@
+BRAND-TEXT|BRAND-TITLE
+ООО «ЛИК» |монтаж газового оборудования, отопления, дымоходов и вентиляции
+!!!!
+
+.org-name
+	h1 $BRAND-TEXT
+	span.legal $BRAND-TITLE

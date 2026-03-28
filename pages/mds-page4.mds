@@ -1,0 +1,667 @@
+{VKLADKIS}
+ID          |TARGET  |SELECT|TABINDEX     |TEXT           |ACTIVE 
+#one-rm-tab |#one-rm |true  |             |Калькулятор 1ПМ|.active
+#working-tab|#working|false |tabindex="-1"|Рабочие веса   |
+#info-tab   |#info   |false |tabindex="-1"|О формулах     |
+/%
+li.nav-item(role="presentation")
+	button[ID].nav-link[ACTIVE](data-bs-toggle="tab" data-bs-target="[TARGET]" type="button" role="tab" aria-selected="[SELECT]" [TABINDEX]) [TEXT]
+%/
+
+
+{BOXES}
+MD | FA
+[
+### Рассчитайте ваш 1ПМ 
+Узнайте ваш одноповторный максимум на основе веса и количества повторений 
+|fa-calculator
+]
+
+[
+### Точные результаты 
+Сравните результаты по разным формулам для более точной оценки 
+|fa-chart-line
+]
+/%
+.col-md-6
+	.feature-box
+		.icon-circle
+			i.fas.[FA]
+		MD/
+[MD]
+		/MD
+%/
+
+
+
+{CECKEDS}
+ID     |CHECKED   |TEXT
+epley  |checked=""|Формула Эпли   
+brzycki|checked=""|Формула Бжицки 
+lander |checked=""|Формула Лэндера
+wathan |          |Формула Ватана 
+
+/%
+.form-check
+	input#[ID].form-check-input(type="checkbox" [CHECKED])
+	label.form-check-label(for="[ID]") [TEXT]
+%/
+
+
+!!!!
+html(lang="ru")
+	head
+		title Калькулятор жима штанги лежа
+		meta(name="description" content="Точный калькулятор жима штанги лежа для расчета одноповторного максимума и рабочих весов.")
+		<!-- Bootstrap 5 CSS -->
+		link(href="./bootstrap.min.css" rel="stylesheet")
+		<!-- Font Awesome -->
+		link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+		<style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+      body {
+			background: url('bg.png') no-repeat center center fixed;
+			background-size: cover;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			min-height: 100vh;
+			padding: 20px 0;
+			color: var(--light);
+			position: relative;
+		}
+
+		/* Добавляем затемнение поверх фона для лучшей читаемости */
+		/* Альтернативный вариант с меньшим затемнением */
+		body::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: rgba(0, 0, 0, 0.4); /* Меньшая прозрачность */
+			z-index: -1;
+		}
+
+		/* Или с цветным наложением */
+		body::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: linear-gradient(135deg, rgba(67, 97, 238, 0.3) 0%, rgba(58, 12, 163, 0.3) 100%);
+			z-index: -1;
+		}
+				
+		.calculator-container {
+			max-width: 800px;
+			margin: 0 auto;
+			background-color: rgba(255, 255, 255, 0.95);
+			border-radius: 20px;
+			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+			overflow: hidden;
+			color: var(--dark);
+		}
+		
+		.header {
+			background: var(--gradient);
+			color: white;
+			padding: 30px;
+			text-align: center;
+		}
+		
+		.header h1 {
+			margin: 0;
+			font-weight: 700;
+			font-size: 2.5rem;
+		}
+		
+		.header p {
+			opacity: 0.9;
+			margin: 10px 0 0;
+		}
+		
+		.content {
+			padding: 30px;
+		}
+		
+		.nav-tabs {
+			border-bottom: 2px solid #e9ecef;
+			margin-bottom: 25px;
+		}
+		
+		.nav-tabs .nav-link {
+			color: var(--dark);
+			font-weight: 600;
+			border: none;
+			padding: 12px 20px;
+		}
+		
+		.nav-tabs .nav-link.active {
+			color: var(--primary);
+			border-bottom: 3px solid var(--primary);
+			background: transparent;
+		}
+		
+		.formula-card {
+			border: none;
+			border-radius: 15px;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+			margin-bottom: 20px;
+			transition: transform 0.3s;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.formula-card:hover {
+			transform: translateY(-5px);
+		}
+
+		.formula-card .card-header {
+			background: var(--primary);
+			color: white;
+			border-radius: 15px 15px 0 0 !important;
+			padding: 15px 20px;
+			font-weight: 600;
+		}																								
+
+		.formula-card .card-body {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.formula-card .card-text {
+			flex: 1;
+			margin-bottom: 15px;
+		}
+
+		.formula-card .text-muted {
+			margin-top: auto;
+			font-size: 0.9rem;
+		}	
+        
+        .result-card {
+            background-color: #e9f7ef;
+            border-left: 4px solid #28a745;
+            border-radius: 10px;
+        }
+        
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+        
+        .feature-box {
+            text-align: center;
+            padding: 20px 15px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .feature-box:hover {
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .weight-badge {
+            font-size: 1.1rem;
+            padding: 8px 15px;
+            margin: 5px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            background: var(--gradient);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+		</style>
+
+	body
+		.calculator-container
+			.header
+				h1
+					i.fas.fa-dumbbell.me-3 
+					span Калькулятор жима штанги лежа
+				p Рассчитайте ваш одноповторный максимум и рабочие веса по разным формулам
+			.content
+				ul.nav.nav-tabs(id="myTab" role="tablist")
+					_/
+					{VKLADKIS}
+
+					
+				#myTabContent.tab-content
+					<!-- Вкладка калькулятора 1ПМ -->
+					#one-rm.tab-pane.fade.active.show(role="tabpanel" aria-labelledby="#one-rm-tab")
+						.row.mb-4
+							BOXES_/
+{BOXES}
+							
+						form#oneRmCalculator
+							.row
+								.col-md-6.mb-3
+									label.form-label(for="weight") Вес на штанге (кг):
+									input#weight.form-control(type="number" min="1" required)
+
+								.col-md-6.mb-3
+									label.form-label(for="reps") Количество повторений:
+									input#reps.form-control(type="number" id="reps" min="1" max="12" required)
+
+							.mb-3
+								label.form-label Выберите формулы для расчета:
+
+								_/
+								{CECKEDS}
+
+					
+
+							button.btn.btn-primary.w-100(type="submit")
+								<i class="fas fa-calculator me-2"></i> Рассчитать 1ПМ
+
+						#oneRmResult.mt-4(style="display: none;")
+							h4.mb-3 Результаты расчета 1ПМ:
+							#oneRmResultsContainer.row
+					
+					<!-- Вкладка рабочих весов -->
+					#working.tab-pane.fade(role="tabpanel" aria-labelledby="#working-tab")
+						form#workingWeightCalculator)
+							.mb-3
+								label.form-label(for="oneRepMax") Ваш одноповторный максимум (1ПМ) в кг:
+								input#oneRepMax.form-control(type="number" min="1" required="")
+							.mb-3
+								label.form-label Количество повторений в подходе:
+								.row
+/*									
+									{
+ID    |VALUE               
+[reps3|value="3" checked=""]
+[reps5|value="5"           ]
+[reps8|value="8"           ]
+[reps10|value="10"         ]
+LABEL[
+3 повторения
+|5 повторения
+]
+LABEL[8 повторений]
+LABEL[10 повторений]
+[
+.col-6.col-md-3.mb-2
+	.form-check
+		input#{ID}/reps.form-check-input(type="radio" {VALUE})
+		label.form-check-label(for="{ID}") {LABEL}
+]
+									}
+*/
+
+									{
+ID   |VALUE               |LABEL
+reps3|value="3" checked=""|3 повторения 
+reps5|value="5"           |5 повторений 
+reps8|value="8"           |8 повторений  
+reps10|value="10"         |10 повторений
+./templates/CHECK.tpl
+}
+									
+
+																		
+/*
+.col-6.col-md-3.mb-2
+	.form-check
+		input#{ID}/reps.form-check-input(type="radio" {VALUE})
+		label.form-check-label(for="{ID}") {LABEL}
+									}
+
+*/
+
+/*
+									_/
+ID   |VALUE               |LABEL
+reps3|value="3" checked=""|3 повторения
+reps5|value="5"           |5 повторения
+reps8|value="8"           |8 повторения
+reps10|value="10"         |10 повторения
+./templates/CHECK.tpl
+*/
+
+/*include ./templates/CHECK.tpl*/
+							.mb-3
+								label.form-label Тип тренировки:
+								select#trainingType.form-select
+									option(value="strength") Силовая (тяжелые подходы)
+									option(value="volume") Объемная (средние веса)
+									option(value="endurance") На выносливость (легкие веса)
+							
+							button.btn.btn-primary.w-100(type="submit")
+								i.fas.fa-dumbbell.me-2 
+								span Рассчитать рабочие веса
+
+						#workingResult.mt-4(style="display: none;")
+							.card.result-card
+								.card-body
+									h5.card-title Результаты расчета 
+									p#resultText
+									#weightTable
+								
+					<!-- Вкладка информации о формулах -->
+					#info.tab-pane.fade(role="tabpanel" aria-labelledby="#info-tab")
+						h4.mb-4 Формулы для расчета 1ПМ
+						.row
+							.col-md-6.mb-4
+								.card.formula-card
+									.card-header Формула Эпли
+									.card-body
+										p.card-text 1ПМ = Вес × (1 + 0.0333 × Повторения)
+										p.text-muted Одна из самых популярных формул, хорошо работает для малого количества повторений.
+
+							.col-md-6.mb-4
+								div.card.formula-card
+									div.card-header Формула Бжицки
+									div.card-body
+										p.card-text 1ПМ = Вес × (36 / (37 - Повторения))
+										p.text-muted")Считается одной из самых точных формул, особенно для опытных атлетов.
+
+							.col-md-6.mb-4
+								div.card.formula-card
+									div.card-header Формула Лэндера
+									div.card-body
+										p.card-text 1ПМ = (100 × Вес) / (101.3 - 2.67123 × Повторения)/p)
+										p.text-muted Модификация формулы Эпли, считается более точной для большинства людей.
+
+							.col-md-6.mb-4
+								.card.formula-card
+									div.card-header Формула Ватана
+									div.card-body
+										p.card-text 1ПМ = (100 × Вес) / (48.8 + 53.8 × e^(-0.075 × Повторения))
+										p.text-muted Современная формула, учитывающая нелинейную зависимость между весом и повторениями.
+									
+						.alert.alert-info
+							h5
+								i.fas.fa-lightbulb.me-2 Совет
+							p.mb-0 Для получения наиболее точных результатов рекомендуется использовать несколько формул и сравнивать результаты. Также помните, что формулы дают приблизительную оценку, и реальный 1ПМ может отличаться.
+						
+		footer
+			p Калькулятор жима штанги лежа © 2025 | Создано с 
+				<i class="fas fa-heart text-danger"></i> для атлетов
+
+		<!-- Bootstrap 5 JS Bundle with Popper -->
+		<!-- script async="" src="https://mc.yandex.ru/metrika/tag.js" style="display: none !important;"></script-->
+		<script src="bootstrap.bundle.min.js"></script>
+		
+		<script>
+       // Функция для анимированного изменения числа
+function animateValue(element, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const value = Math.floor(progress * (end - start) + start);
+        element.textContent = value + ' кг';
+        
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
+// Формулы для расчета 1ПМ
+const formulas = {
+    epley: (weight, reps) => weight * (1 + reps / 30),
+    brzycki: (weight, reps) => weight * (36 / (37 - reps)),
+    lander: (weight, reps) => (100 * weight) / (101.3 - 2.67123 * reps),
+    wathan: (weight, reps) => (100 * weight) / (48.8 + 53.8 * Math.exp(-0.075 * reps))
+};
+
+// Обработчик формы расчета 1ПМ
+document.getElementById('oneRmCalculator').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const weight = parseFloat(document.getElementById('weight').value);
+    const reps = parseInt(document.getElementById('reps').value);
+    
+    if (isNaN(weight) || weight <= 0 || isNaN(reps) || reps <= 0 || reps > 12) {
+        alert('Пожалуйста, введите корректные значения для веса и повторений');
+        return;
+    }
+    
+    const resultsContainer = document.getElementById('oneRmResultsContainer');
+    resultsContainer.innerHTML = '';
+    
+    let hasResults = false;
+    
+    // Проверяем каждую формулу и добавляем результат, если выбран чекбокс
+    for (const [key, formula] of Object.entries(formulas)) {
+        if (document.getElementById(key).checked) {
+            const oneRm = Math.round(formula(weight, reps));
+            
+            const formulaNames = {
+                epley: 'Эпли',
+                brzycki: 'Бжицки',
+                lander: 'Лэндера',
+                wathan: 'Ватана'
+            };
+            
+            const col = document.createElement('div');
+            col.className = 'col-md-6 mb-3';
+            col.innerHTML = `
+                <div class="card formula-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">${formulaNames[key]}</h5>
+                        <div class="display-4 text-primary fw-bold one-rm-value">0 кг</div>
+                        <p class="text-muted">Ваш расчетный 1ПМ</p>
+                    </div>
+                </div>
+            `;
+            
+            resultsContainer.appendChild(col);
+            
+            // Анимируем изменение числа
+            const valueElement = col.querySelector('.one-rm-value');
+            setTimeout(() => {
+                animateValue(valueElement, 0, oneRm, 1000);
+            }, 100);
+            
+            hasResults = true;
+        }
+    }
+    
+    if (hasResults) {
+        document.getElementById('oneRmResult').style.display = 'block';
+    } else {
+        alert('Пожалуйста, выберите хотя бы одну формулу для расчета');
+    }
+});
+
+// Обработчик формы расчета рабочих весов
+document.getElementById('workingWeightCalculator').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const oneRepMax = parseFloat(document.getElementById('oneRepMax').value);
+    const reps = document.querySelector('input[name="reps"]:checked').value;
+    const trainingType = document.getElementById('trainingType').value;
+    
+    if (isNaN(oneRepMax) || oneRepMax <= 0) {
+        alert('Пожалуйста, введите корректное значение для одноповторного максимума');
+        return;
+    }
+    
+    // Рассчитываем вес для выбранного количества повторений
+    let weightForReps;
+    switch(reps) {
+        case '3':
+            weightForReps = oneRepMax * 0.93;
+            break;
+        case '5':
+            weightForReps = oneRepMax * 0.87;
+            break;
+        case '8':
+            weightForReps = oneRepMax * 0.80;
+            break;
+        case '10':
+            weightForReps = oneRepMax * 0.75;
+            break;
+        default:
+            weightForReps = oneRepMax * 0.87;
+    }
+    
+    // Рассчитываем веса для разных подходов в зависимости от типа тренировки
+    let setsWeights = [];
+    let trainingDescription = '';
+    
+    switch(trainingType) {
+        case 'strength':
+            setsWeights = [
+                { sets: 1, reps: reps, percentage: 100, weight: Math.round(weightForReps) },
+                { sets: 2, reps: reps, percentage: 95, weight: Math.round(weightForReps * 0.95) },
+                { sets: 1, reps: reps, percentage: 90, weight: Math.round(weightForReps * 0.90) }
+            ];
+            trainingDescription = 'Силовая тренировка: тяжелые подходы с небольшим снижением веса для поддержания интенсивности.';
+            break;
+            
+        case 'volume':
+            setsWeights = [
+                { sets: 1, reps: reps, percentage: 100, weight: Math.round(weightForReps) },
+                { sets: 3, reps: reps, percentage: 100, weight: Math.round(weightForReps) },
+                { sets: 1, reps: reps, percentage: 90, weight: Math.round(weightForReps * 0.90) }
+            ];
+            trainingDescription = 'Объемная тренировка: несколько подходов с одинаковым весом для наработки объема.';
+            break;
+            
+        case 'endurance':
+            const enduranceReps = parseInt(reps) + 2;
+            const enduranceWeight = Math.round(weightForReps * 0.85);
+            setsWeights = [
+                { sets: 1, reps: enduranceReps, percentage: 85, weight: enduranceWeight },
+                { sets: 3, reps: enduranceReps, percentage: 85, weight: enduranceWeight },
+                { sets: 1, reps: enduranceReps, percentage: 80, weight: Math.round(enduranceWeight * 0.94) }
+            ];
+            trainingDescription = 'Тренировка на выносливость: увеличение количества повторений с меньшим весом.';
+            break;
+    }
+    
+    // Формируем текст результата с анимацией
+    const roundedWeight = Math.round(weightForReps);
+    let resultText = `При вашем одноповторном максимуме ${oneRepMax} кг, для ${reps} повторений рекомендуется вес: <strong><span id="animatedWeight">0</span></strong>.`;
+    resultText += `<br>${trainingDescription}`;
+    
+    // Формируем таблицу с подходами
+    let weightTable = `
+        <table class="table table-hover mt-3">
+            <thead class="table-primary">
+                <tr>
+                    <th>Подходы</th>
+                    <th>Повторения</th>
+                    <th>% от 1ПМ</th>
+                    <th>Вес (кг)</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    setsWeights.forEach((set, index) => {
+        weightTable += `
+            <tr>
+                <td>${set.sets}</td>
+                <td>${set.reps}</td>
+                <td>${set.percentage}%</td>
+                <td><span class="badge bg-primary weight-badge animated-set-weight" data-weight="${set.weight}">0 кг</span></td>
+            </tr>
+        `;
+    });
+    
+    weightTable += `</tbody></table>`;
+    
+    // Отображаем результат
+    document.getElementById('resultText').innerHTML = resultText;
+    document.getElementById('weightTable').innerHTML = weightTable;
+    document.getElementById('workingResult').style.display = 'block';
+    
+    // Анимируем основной вес
+    setTimeout(() => {
+        const weightElement = document.getElementById('animatedWeight');
+        animateValue(weightElement, 0, roundedWeight, 800);
+    }, 100);
+    
+    // Анимируем веса в таблице с задержкой
+    setTimeout(() => {
+        const setWeightElements = document.querySelectorAll('.animated-set-weight');
+        setWeightElements.forEach((element, index) => {
+            const finalWeight = parseInt(element.getAttribute('data-weight'));
+            setTimeout(() => {
+                animateValue(element, 0, finalWeight, 600);
+            }, index * 200); // Задержка для каждого следующего элемента
+        });
+    }, 500);
+    
+    // Прокручиваем к результату
+    document.getElementById('workingResult').scrollIntoView({ behavior: 'smooth' });
+});
+		</script>
