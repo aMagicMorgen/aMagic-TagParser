@@ -5,7 +5,7 @@ ID          |TARGET  |SELECT|TABINDEX     |TEXT           |ACTIVE
 #info-tab   |#info   |false |tabindex="-1"|О формулах     |
 /%
 li.nav-item(role="presentation")
-	button[ID].nav-link[ACTIVE](data-bs-toggle="tab" data-bs-target="[TARGET]" type="button" role="tab" aria-selected="[SELECT]" [TABINDEX]) [TEXT]
+	button$ID.nav-link$ACTIVE(data-bs-toggle="tab" data-bs-target="$TARGET" type="button" role="tab" aria-selected="$SELECT" $TABINDEX) $TEXT
 %/
 
 
@@ -26,7 +26,7 @@ MD | FA
 .col-md-6
 	.feature-box
 		.icon-circle
-			i.fas.[FA]
+			i.fas.$FA
 		MD/
 [MD]
 		/MD
@@ -43,8 +43,8 @@ wathan |          |Формула Ватана
 
 /%
 .form-check
-	input#[ID].form-check-input(type="checkbox" [CHECKED])
-	label.form-check-label(for="[ID]") [TEXT]
+	input#$ID.form-check-input(type="checkbox" $CHECKED)
+	label.form-check-label(for="$ID") $TEXT
 %/
 
 
@@ -361,14 +361,14 @@ LABEL[10 повторений]
 									}
 */
 
-									{
+									_/
 ID   |VALUE               |LABEL
 reps3|value="3" checked=""|3 повторения 
 reps5|value="5"           |5 повторений 
 reps8|value="8"           |8 повторений  
 reps10|value="10"         |10 повторений
-./templates/CHECK.tpl
-}
+include ./templates/CHECK.tpl
+
 									
 
 																		
