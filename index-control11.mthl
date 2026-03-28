@@ -1,0 +1,391 @@
+html(lang="ru")
+	head
+		title Учебник MDS · MarkDownStyle
+		<!-- Bootstrap 5 + иконки Bootstrap Icons (легко читаемый светлый учебник) -->
+		link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet")
+		link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css")
+		\\link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css")
+		\\script(src="./lib/aMagic/mds/mds-bulma.js")
+		<!-- чуть собственных штрихов для удобства чтения и имитации "учебного" стиля -->
+		<style>
+body {
+	background: #f8fafc;
+	font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+	}
+	.tutorial-header {
+		background: linear-gradient(145deg, #1a9f18 0%, #0f50a1 100%);
+		color: white;
+		border-bottom: 5px solid #ffc107;
+	}
+	.tutorial-header h1 {
+		font-weight: 500;
+		letter-spacing: -0.02em;
+	}
+	.tutorial-header p {
+		color: #cfdfee;
+	}
+details {
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 0.5rem 1rem;
+	margin-bottom: 1rem;
+	}
+details[open] {
+	background-color: #f8f9fa;
+	}
+details > summary {
+	cursor: pointer;
+	font-weight: 600;
+	list-style: none;
+	}
+	
+	
+
+.card-tutorial {
+	border: none;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(0,20,40,0.05);
+	transition: all 0.1s ease;
+	border-radius: 1.2rem;
+	background-color: rgba(255,255,255,0.8);
+	backdrop-filter: blur(2px);
+	border: 1px solid rgba(0,0,0,0.03);
+}
+.card-tutorial:hover {
+	box-shadow: 0 12px 28px rgba(0,32,64,0.08);
+}
+.section-tag {
+	font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+	background: #e9ecef;
+	padding: 0.2rem 0.8rem;
+	border-radius: 3rem;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #1e3a5f;
+	border: 1px solid #ced4da;
+	display: inline-block;
+	margin-bottom: 0.75rem;
+}
+pre {
+	#background: #1e293b; /* тёмный блок под код – контрастно, отлично читается */
+	color: #e2e8f0;
+	padding: 1.2rem 1.5rem;
+	border-radius: 1.2rem;
+	font-size: 0.9rem;
+	font-family: 'JetBrains Mono', 'Fira Code', monospace;
+	border-left: 4px solid #f5b041;
+	tab-size: 2;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+pre code {
+	color: #0f20f1;
+}
+
+/*
+pre code {
+	color: #f1c40f;
+}
+*/
+.markdown-hint {
+	background: #f1f9fe;
+	border-left: 5px solid #0d6efd;
+	border-radius: 1rem 0.5rem 0.5rem 1rem;
+	padding: 1.2rem 1.5rem;
+	margin: 1.8rem 0;
+}
+.markdown-hint i {
+	color: #0a58ca;
+}
+.markdown-hint2 {
+	background: #fd00001f;
+	border-left: 5px solid #fd0d0d;
+	border-radius: 1rem 0.5rem 0.5rem 1rem;
+	padding: 1.2rem 1.5rem;
+	margin: 1.8rem 0;
+}
+.markdown-hint2 i {
+	color: #c10000;
+}
+
+.badge-mds {
+	background-color: #cfdfff;
+	color: #012970;
+	font-weight: 500;
+	padding: 0.3rem 0.9rem;
+	border-radius: 30px;
+	font-size: 0.75rem;
+	border: 1px solid #92b4e0;
+}
+.toc-sticky {
+	position: sticky;
+	top: 1.5rem;
+	max-height: calc(100vh - 3rem);
+	overflow-y: auto;
+}
+.list-group-toc a {
+	border: none;
+	padding: 0.5rem 1rem;
+	background: transparent;
+	color: #1e3a5f;
+	font-weight: 450;
+	border-radius: 40px;
+}
+.list-group-toc a:hover {
+	background: #e5ecf5;
+	color: #0b2a4f;
+}
+.list-group-toc a i {
+	font-size: 0.75rem;
+	margin-right: 0.4rem;
+	color: #2c74b5;
+}
+hr.divider {
+	opacity: 0.2;
+	margin: 2.2rem 0;
+}
+.example-label {
+	font-size: 0.85rem;
+	display: block;
+	margin-bottom: 0.2rem;
+	color: #3f5e7a;
+	letter-spacing: 0.3px;
+}
+		</style>
+	
+	include ./parts/header8-bootstrap5.html	
+	body
+
+
+
+		include ./parts/hero-bootstrap5.mth
+	.container.py-5
+		.row
+\\Оглавление (левая колонка)
+			.col-lg-3
+				include ./parts/left-list-bootstrap5.mth
+
+\\Основной контент — карточки разделов
+			.col-lg-9
+/*				
+				_/
+{HERO}	
+CLASS|ВЕРХ|ЗАГОЛОВОК|ПОДЗАГОЛОВОК|TEXTMD|ЛЕВЫЙ|ПРАВЫЙ|КНОПКА
+[
+.clr3.bg-gradient-to-l.from-primary.to-secondary.text-center
+|                  СЕЛЕКТОРНЫЙ СИНТАКСИС
+|                   MDS - MarkDown Style
+|Быстро и легко стилистически оформите динамические страницы в PHP, MarkDown
+|# <span style="color: white;">НАПРИМЕР ЗДЕСЬ MD-текст</span>
+<span style="color: white;">и ЗДЕСЬ MD-текст</span>
+|БЫСТРОТА ВЕРСТКИ                         |ИСПОЛЬЗОВАНИЕ ШАБЛОНОВ
+|         (href="#helo") ЗНАКОМИМСЯ
+]
+include ./parts/hero.mds
+*/
+				<!-----------------КАРТОЧКА 0 --------------------------->
+				_/    ./parts/card1-bootstrap5.mth
+/*CARD-ID*/				
+{ID} md0           
+/*CARD-HEADER*/
+{HEADER}           
+BI-HEADER   |SPAN  
+.bi.bi-hash | MD3 НОВЫЙ     
+
+/*CARD-INFO*/
+{INFO}
+BI-INFO | TEXT-INFO
+[.bi.bi-pin-angle-fill
+|НВОЕ ОПИСАНИЕ3. Работает и с переменными: справа может быть вариант «переменные в фигурных скобках», 
+но наоборот — переменная без скобок, значения в фигурных.
+]
+
+/*CARD-BODY*/
+{BODY}
+H3|P
+[Синтаксис похож на PUG, добавлен атрибут name
+|Селектор записывается через / после #(id селектора). 
+Пример: tag#id/name.class1.class2(attr) text. 
+Если не указан тег — подразумевается div.
+]
+
+/*CARD-FOOTER*/
+{FOOTER}
+BI-FOOTER          |TEXT-FOOTER
+.bi.bi-info-circle |Пробелы в начале — табуляция задаёт вложенность.
+
+{CODES}
+CODE-NAME  |CODE-BODY
+[MDS      
+|h1#title/main.class1.class2 
+	i курсивный текст
+	span lorem text 
+]
+[Вывод HTML
+|&lt;h1 id="title" name="main" class="class1 class2"&gt;
+    &lt;i&gt;курсивный текст&lt;/i&gt;
+    &lt;span&gt;lorem text&lt;/span&gt;
+&lt;/h1&gt; 
+]
+||||
+include ./parts/card1-bootstrap5.mth
+\\MD1
+				include ./demo/CARD1-CLASSIK.mds
+
+				include ./demo/CARD0-SHABLON.mds
+				
+				\\include ./demo/CARD-SHABLON.mds
+				
+				\\include ./parts/card1-bootstrap5.mth
+
+				\\include ./parts/card2-bootstrap5.mth
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------КАРТОЧКА 4 -------------------------*/
+				#md4.card.card-tutorial.p-4.mb-4
+					_/                  /*CARD-HEADER*/
+BI-HEADER   |SPAN
+.bi.bi-hash | MD4 КАРТОЧКА 4
+include ./templates/СARD-BOOTSTRAP/HEADER.mth
+					_/                    /*CARD-INFO*/
+BI-INFO | TEXT-INFO
+[.bi.bi-pin-angle-fill
+|Работает и с переменными: справа может быть вариант «переменные в фигурных скобках», 
+но наоборот — переменная без скобок, значения в фигурных.]
+include ./templates/СARD-BOOTSTRAP/INFO.mth
+
+					_/                  /*CARD-BODY*/
+H3|P
+[Синтаксис похож на PUG, добавлен атрибут name
+|Селектор записывается через / после #(id селектора). 
+Пример: tag#id/name.class1.class2(attr) text. 
+Если не указан тег — подразумевается div.]
+include ./templates/СARD-BOOTSTRAP/BODY.mth
+
+					                    /*CARD-CODE*/
+					.row.g-3 /* сделаем колонки */
+						_/
+CODE-NAME  |CODE-BODY
+[MDS      
+|h1#title/main.class1.class2 
+	i курсивный текст
+	span lorem text 
+]
+[Вывод HTML
+|&lt;h1 id="title" class="class1 class2" name="main"&gt;
+    &lt;i&gt;курсивный текст&lt;/i&gt;
+    &lt;span&gt;lorem text&lt;/span&gt;
+&lt;/h1&gt; 
+]
+/%
+.col
+	.example-label $CODE-NAME
+	pre
+		<code>
+[CODE-BODY]
+		</code>
+%/
+					_/                      /*CARD-FOOTER*/
+BI-FOOTER         |TEXT-FOOTER
+.bi.bi-info-circle|Пробелы в начале — табуляция задаёт вложенность.
+include ./templates/СARD-BOOTSTRAP/FOOTER.mth
+
+/* ---------------КАРТОЧКА 5 с блоками и переменными внутри -------------------------*/
+				#md5.card.card-tutorial.p-4.mb-4 /*ЭТО ЗАГЛАВНЫЙ ТЕГ*/
+					_/                  /*CARD-HEADER*/
+BI-HEADER   |SPAN
+.bi.bi-hash | MD4 КАРТОЧКА 5 с блоками и переменными внутри
+/%
+span.section-tag
+	i$BI-HEADER
+	span $SPAN
+%/
+					.row.g-3 /* сделаем колонки */
+						_/                    /*CARD-INFO*/
+BI-INFO | TEXT-INFO
+[.bi.bi-pin-angle-fill
+|Работает и с переменными: справа может быть вариант «переменные в фигурных скобках», 
+но наоборот — переменная без скобок, значения в фигурных.]
+[.bi.bi-pin-angle-fill
+|Работает и с переменными: справа может быть вариант «переменные в фигурных скобках», 
+но наоборот — переменная без скобок, значения в фигурных.]
+/%
+.col
+	p.markdown-hint
+		i$BI-INFO.me-2 $TEXT-INFO
+%/
+					.row.g-3 /* сделаем колонки */
+						_/                  /*CARD-BODY*/
+H3|P
+[Синтаксис похож на PUG, добавлен атрибут name
+|Селектор записывается через / после #(id селектора). 
+Пример: tag#id/name.class1.class2(attr) text. 
+Если не указан тег — подразумевается div.]
+[Синтаксис похож на PUG, добавлен атрибут name
+|Селектор записывается через / после #(id селектора). 
+Пример: tag#id/name.class1.class2(attr) text. 
+Если не указан тег — подразумевается div.]
+/%
+.col
+	h3.fw-semibold $H3
+	p $P
+%/
+                    
+					.row.g-3 /* сделаем колонки */
+						_/      /*CARD-CODE 3 столбика*/
+CODE-NAME  |CODE-BODY
+[MDS      
+|h1#title/main.class1.class2 
+	i курсивный текст
+	span lorem text 
+]
+[MDS      
+|h1#title/main.class1.class2 
+	i курсивный текст
+	span lorem text 
+]
+[Вывод HTML
+|&lt;h1 id="title" class="class1 class2" name="main"&gt;
+    &lt;i&gt;курсивный текст&lt;/i&gt;
+    &lt;span&gt;lorem text&lt;/span&gt;
+&lt;/h1&gt; 
+]
+/%
+.col
+	.example-label $CODE-NAME
+	pre
+		<code>
+[CODE-BODY]
+		</code>
+%/
+					_/                      /*CARD-FOOTER*/
+BI-FOOTER         |TEXT-FOOTER
+.bi.bi-info-circle|Пробелы в начале — табуляция задаёт вложенность.
+/%
+p.mt-3.small
+	i$BI-FOOTER
+	span $TEXT-FOOTER
+%/
+
+
+
+	include ./parts/footer.php
+
