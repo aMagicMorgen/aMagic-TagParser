@@ -303,13 +303,12 @@ class TagParser {
 				$replase[] = $line;
 				continue;
 */
-				/*
-				if($linetrim == '/%' || $linetrim == '}') {
+				
+				if($linetrim == '/%') {
 					$n = 4;
 					$replase[] = '/%';
 					continue;
-				}else*/
-				if (strpos(' '.$line,'include')) {
+				}elseif (strpos(' '.$line,'include')) {
 					if(!in_array('/%', $replase)) $replase[] = '/%';
 					$link = trim(explode ('include', $linetrim)[1]);
 					#$replase[] = $this->getTemplate($link);
