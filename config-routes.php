@@ -6,8 +6,6 @@ mb_internal_encoding('UTF-8');
 header('Content-Type: text/html; charset=utf-8');
 // Создать .htaccess в текущей папке
 /*
-.htaccess
-
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -18,7 +16,7 @@ RewriteRule ^(.*)$ index-tagparser.php [QSA,L]
 require_once __DIR__ . '/lib/aMagic/TegParser/TagParser.php';
 $routes = [
 	'vizitka' => './pages/vizitka/vizitka.mthl',
-	'book1' => 'index-control11.mthl',
+	'book' => 'index-control11.mthl',
 	'mds' => 'ОПИСАНИЕ.md',
 	'demo' => 'demo.md',
 	'' => 'pages/mds-page2.php',
@@ -26,6 +24,7 @@ $routes = [
     'home1' => 'pages/mds-page2.php',
     'home2' => 'pages/mds-page3.mds',
     'forma' => 'pages/mds-page4.mds',
+	'forma2' => 'pages/forma/forma.mds',
     'home4' => 'index-control2.mds',
 ];
 
