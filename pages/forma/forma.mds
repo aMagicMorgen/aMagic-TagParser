@@ -1,0 +1,138 @@
+html(lang="ru")
+	head
+		title FORMA2
+		meta(name="description" content="FORMA2")
+		link(rel="stylesheet" href="./bootstrap.min.css")
+		link(href="./aMagicDocGenerator.css" rel="stylesheet")
+		link(href="./generator-inputs.css" rel="stylesheet")
+		link(href="./i-style.css" rel="stylesheet")
+		
+	body
+		FORM/
+{content1} НАЗВАНИЕ ФОРМЫ
+
+{content2}
+<h3>Здесь может быть картинка, описание или кнопка </h3> 
+<button class='btn btn-danger'>КНОПКА</button>
+<h3>которую нужно убрать</h3>
+
+{content3}Вы даете свои персональные данные!
+
+{INPUTS}
+#-label-name-type-значение:подсказка, значение2:подсказка2 |
+<ОСНОВНОЕ |
+-ДАТА-ДАТА-date & ВРЕМЯ-ВРЕМЯ-time & -НОМЕР-НОМЕР-search & -Действует до-ДАТА2-date |
+-ОРГАНИЗАЦИЯ- ОРГАНИЗАЦИЯ-search-АО «», ИП "", ООО "", & -ТЕЛЕФОН- ТЕЛЕФОН -tel |
+-АДРЕС-АДРЕС -search-Московская обл. г. Подольск |
+-Представитель-ФИО - text - Иванов Иван Иванович :ФИО & ИОФ-ИОФ-search- И.И. Иванов :ИОФ & ДОКУМЕНТ-ДОКУМЕНТ-search-доверенность: ДОКУМЕНТ, паспорт:ДОКУМЕНТ, |
+<КОТЛЫ |
+Котлы марки-МАРКА-search-Ишма 100(N 97 кВт) &
+Количество котлов- КОЛИЧЕСТВО - search-3 шт.:котел, 2шт.:котел, 1 шт.:котел |
+Котлы выполнены из -МАТЕРИАЛ2 - search-чугуна:Материал, металла:Материал &
+Состояние котлов-СОСТОЯНИЕ2-search-технически не исправны:Состояние, технически исправны : Состояние |
+<ДЫМОВЫЕ ТРУБЫ |
+-Сечение-СЕЧЕНИЕ-search-Ø 220 мм (1шт) :Сечение &
+Диаметр-ДИАМЕТР-search-Ø 220мм (1шт) |
+-выполнена из-МАТЕРИАЛ-search-стальной трубы с утеплением :Материал трубы &
+-Высота-ВЫСОТА-search-h = 3м. (1шт) :Высота труб |
+ Состояние дым. труб-СОСТОЯНИЕ-search-технически неисправны:Состояние, технически исправны : Состояние |
+ <БОРОВ И ВЕНТКАНАЛ |
+Боров имеет-БОРОВ-search- имеет:НАЛИЧИЕ, не имеет : НАЛИЧИЕ &
+Состояние трубы-СОСТОЯНИЕ3-search-не очищены:Состояние, очищены : Состояние, технически не исправны:Состояние,техническиисправны: Состояние |
+Состояние ветрового подпора-ПОДПОР-search- в зоне ветрового подпора:плохо , вне зоны ветрового подпора:хорошо &
+ВЕНТИЛЯЦИЯ-ВЕНТИЛЯЦИЯ-search-отсутствует:нет, в норме:да |
+ Тяга на время проверки-ТЯГА- не соответствует норме согласно инструкции:нет, соответствует норме согласно инструкции:да |
+ <ЧИСТИЛЬЩИКИ и ИСПОЛНИТЕЛЬ |
+ЧИСТИЛЬЩИК1-ЧИСТИЛЬЩИК1-search- Шевыряев Денис Русланович : Читильщик &
+УДОСТОВЕРЕНИЕ1-УДОСТОВЕРЕНИЕ1-search- удост. № 6654.05: Шевыряев Д.Р. |
+ЧИСТИЛЬЩИК2-ЧИСТИЛЬЩИК2-search &
+УДОСТОВЕРЕНИЕ2-УДОСТОВЕРЕНИЕ2-search |
+-ИСПОЛНИТЕЛЬ-ИСПОЛНИТЕЛЬ-search- ЧЕРНЫШОВ А.А. : МАСТЕР &
+-УДОСТОВЕРЕНИЕ-УДОСТОВЕРЕНИЕ-search- уд.№ 953.25 от 18.03.2022г. : ЧЕРНЫШОВ А.А. |
+>ПРИМЕЧАНИЕ-prim-search - Юрид.,Подписан,Подписать
+||||
+<section>
+<?php
+include "./pages/forma/shablon/form-shablon1.php";
+?>
+</section>
+<style>
+	section {
+		margin: 2em auto;
+		padding: 2em 2em;
+		display: flex;
+		max-width: 60em;
+		background: #fff;
+		border-radius: 0.75rem;
+		line-height: 1.6;
+		overflow: hidden;
+		margin-bottom: 2rem;
+		position: relative;
+		font-size: .875rem;
+		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
+	}
+	summary {
+		padding: 12px 16px;
+		cursor: pointer;
+		font-weight: 600;
+		background-color: #f7f7f7;
+		list-style: none;
+	}
+</style>
+/*
+||||
+
+
+<section>
+	<form id="formid" action="./" method="POST">
+		<section>
+			<div class="row">
+				<div class="col">
+					<h1>$content1</h1>
+				</div>
+				<div class="col">
+					<h5>$content2</h5>
+				</div>
+			</div>
+		</section>
+|		<details {attrs}>
+			<summary>{namegroup}</summary>
+|			<div class="row">
+|				<div class="col">
+|					<label class="form-label" for="{id}">{label}</label>
+					{tag} class="form-control" {attrs}>{tagend}
+					{datalist}
+|				</div>
+|			</div>
+|		</details>
+|		{content3}
+		<br>
+		<button type="submit" class="btn btn-primary" for="formid">Отправить</button>
+	</form>
+</section>
+
+<style>
+	section {
+		margin: 2em auto;
+		padding: 2em 2em;
+		display: flex;
+		max-width: 60em;
+		background: #fff;
+		border-radius: 0.75rem;
+		line-height: 1.6;
+		overflow: hidden;
+		margin-bottom: 2rem;
+		position: relative;
+		font-size: .875rem;
+		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
+	}
+	summary {
+		padding: 12px 16px;
+		cursor: pointer;
+		font-weight: 600;
+		background-color: #f7f7f7;
+		list-style: none;
+	}
+</style>
+*/
+		/FORM
