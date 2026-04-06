@@ -1,9 +1,14 @@
 <?php
-//tagparser.php
-// 09.04.2025 автор Алексей Нечаев, г. Москва, +7(999)003-90-23, nechaev72@list.ru
-
+/**
+ * TagParser - MDS - MarkDown Style - парсер для преобразования упрощенного синтаксиса в HTML
+ * Поддерживает вложенность, PHP-блоки, Markdown и шаблоны
+ * 
+ * @author Алексей Нечаев, г. Москва, +7(999)003-90-23, nechaev72@list.ru
+ * @version 09.04.2025
+ */
 
 class TagParser {
+	const FORM_GENERATOR = __DIR__ . '/FormGenerator_v2.0.php';
    const VOID_TAGS = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
    // HEAD вставляется после тега </head>
    const HEAD = '
@@ -63,30 +68,21 @@ class TagParser {
 					if(trim($block) == '') continue;
 					[$key, $value] = explode("}", $block);
 					$key = trim($key);
-					#$value = str_replace(['/%', '%/'], ['||||', '/_'], $value);
-					#$value = str_replace(['[', ']', '/%', '%/'], ['{', '}', '||||', "/_\n"], $value);//
-					#print_r($value);
 					$value1 = $value;
 					$value2 = "\n" . trim($value);
 					$value3 = trim(str_replace("\n", ' ', $value));
-					#$input = str_replace(['{' . $key. '}', '[' . $key. ']', '$' . $key], $value,  $input);
 					$input = str_replace(['{' . $key. '}', '[' . $key. ']', '$' . $key], [$value1, $value2, $value3],  $input);
-					
 				}
-				#print_r($input);
 			}elseif(strpos($blocks, '|')){
 					$input = $blocks . "\n/%\n" . $input . "\n/_\n";
 			}else {
 					$blocks = explode('}', $blocks);
 					foreach ($blocks as $block){
-						#if(trim($block) == '') continue;
 						@[$key, $value] = explode("{", $block);
 						$key = trim($key);
-						#$value = str_replace(['/%', '%/'], ['||||', "/_\n"], $value);
 						$value1 = $value;
 						$value2 = "\n" . trim($value);
-						$value3 = trim(str_replace("\n", ' ', $value));
-						#$input = str_replace(['{' . $key. '}', '[' . $key. ']', '$' . $key], $value,  $input);
+						$value3 = preg_replace('/\s+/', ' ', $value);//trim(str_replace("\n", ' ', $value));
 						$input = str_replace(['{' . $key. '}', '[' . $key. ']', '$' . $key], [$value1, $value2, $value3],  $input);
 					}
 				}
@@ -98,21 +94,16 @@ class TagParser {
 		$this->html = '';
 		 $stack = [];
 		 $n = 0;
-		#$inputtrim = trim($input);
 		// Если это путь к файлу берем из него текст или очищаем от коментариев в /* */
 		$input = $this->getTemplate($input);
-		#print_r ($input);
 		if(strpos(' ' . $input, 'VAR/')){
 			$input = $this->extractVarBlocks($input);
-			#print_r ($input);
 			// Если обнаружен PHP код то выполняем  его
 			if(strpos(' '. $input, '<?')){
 				$input = $this -> phpParser ($input);
 			}
 			
 			$input = $this->applyTemplate($input, $_SESSION['VAR']);
-			
-			#exit;
 			// Удаляем только VAR из сессии
 			unset($_SESSION['VAR']);
 				// Проверяем результат
@@ -124,7 +115,15 @@ class TagParser {
 		if(strpos(' '. $input, '<?')){
 			$input = $this -> phpParser ($input);
 		}
-
+/*
+		if(strpos($input, 'FORM/') && strpos($input, '/FORM')){
+			require_once static::FORM_GENERATOR;
+			$this->html .= FormGenerator::form($input);
+			
+			continue;
+		}
+*/		
+		
 		// Если есть разделитель '!!!!' там заменяем переменные
 		if(strpos($input, '!!!!')){
 			$input = $this -> mdsBlock($input);
@@ -133,12 +132,11 @@ class TagParser {
 		
 		
 		
+		
 		// Начинаем обработу готового текста MarkDoun Style
 		// Все строки в массив
 		$lines = $this->filterEmptyLines(explode("\n", trim($input)));
 		
-		#print_r (implode("\n", $lines));
-		#exit;
 		// Начинаем большой цикл
         foreach ($lines as $line) {
 			
@@ -160,98 +158,77 @@ class TagParser {
 				$this->html .= $this->phpParser($phpkod);
 			continue;
 			}
+			
+//Блок обработки формы
+			if($linetrim == 'FORM/'){
+				$n = 7;
+				$formkod = [];// Сбрасываем содержимое для нового блока
+				#$formkod[] = 'FORM/';
+				// Закрываем теги при снижении уровня вложенности
+				while ($indent < (count($stack) * 2)) {
+					$this->html .= array_pop($stack);
+				}
+				continue;
+			}
+			
+			if($n === 7 && $linetrim !== '/FORM') {
+				if($linetrim === '')continue; // Пропускаем пустые строки
+				$formkod[] = $line;
+				continue;
+			}elseif($linetrim == '/FORM'){
+				$n = 0;
+				#$formkod[] = '/FORM';
+				$formkod = implode("\n", $formkod);
+				#print_r($formkod);
+				require_once static::FORM_GENERATOR;
+				$this->html .= FormGenerator::form($formkod);
+				$formkod = [];// Сбрасываем содержимое для нового блока
+				continue;
+			}
+//////////////////
+
+//Блок обработки inputs
+			if($linetrim == 'INPUTS/'){
+				$n = 8;
+				$formkod = [];// Сбрасываем содержимое для нового блока
+				// Закрываем теги при снижении уровня вложенности
+				while ($indent < (count($stack) * 2)) {
+					$this->html .= array_pop($stack);
+				}
+				continue;
+			}
+			
+			if($n === 8 && $linetrim !== '/INPUTS') {
+				if($linetrim === '')continue; // Пропускаем пустые строки
+				$formkod[] = $line;
+			}elseif($linetrim == '/INPUTS'){
+				$n = 0;
+				$formkod = implode("\n", $formkod);
+				require_once static::FORM_GENERATOR;
+				$this->html .= FormGenerator::inputs($formkod);
+				$formkod = [];// Сбрасываем содержимое для нового блока
+				continue;
+			}
+//////////////////
+			
 	
-			if($n == 2) {
-				/*if(strpos(' '.$line,'include') && !strpos(' '.$line,"\\")){
-					$link = trim(explode ('include', $linetrim)[1]);
-					$phpkod .= $this->getTemplate($link);//$this->phpParser($this->getTemplate($link));
-				} else*/
-					
+			if($n === 2) {
 				if(strpos(' '.$line, "\\")){
 					$phpkod .= "\n";
 				} else $phpkod .= $line . "\n";
 				continue;
 			}
-			
-			
-/*		
-			if(strpos($line, '<zero-md') || 
-				strpos($line, '<script') || 
-				strpos($line, '<style') || 
-				$linetrim == 'MD/' || //$linetrim == 'MD000000' || 
-				$linetrim == 'HTML/'  && $n === 0 )$n = 1;
-		
-		
-*/			
 				
 			if($linetrim == '/HTML') {
 				$n = 0;
 				continue;
 			}
 				
-				
-		/*if($linetrim == '}') {
-				$linetrim = '%/';
-				#continue;
-			}
-			*/
+
 		if($linetrim == '%/') {
 				$n = 4;
-				#continue;
 			}
 		
-		/*
-			if($linetrim == 'HTML/' || $linetrim == '/HTML' || $linetrim == 'PHP/' || $linetrim == '/PHP' && $n == 1){ 
-				// Закрываем теги при снижении уровня вложенности
-				while ($indent < (count($stack) * 2)) {
-					$this->html .= array_pop($stack);
-				}
-				$this->html .= "\n";
-				$n = 0;
-				continue;
-			}
-			*/
-			/*
-			if($linetrim == 'MD/' //|| $linetrim == 'MD000000' 
-			&& $n === 1) {
-				// Закрываем теги при снижении уровня вложенности
-				while ($indent < (count($stack) * 2)) {
-					$this->html .= array_pop($stack);
-				}
-				$this->html .= static::ZERO_MD_START;
-				continue;
-			}
-			*/
-			
-	/*
-			if($linetrim == '/MD' //|| $linetrim == '000000MD' 
-			#&& $n !== 4  && $n !== 3 
-			&& $n === 1) {
-				$this->html .= static::ZERO_MD_END;
-				$n = 0;
-				continue;
-			}
-	*/		
-			
-/*			
-			if($n == 1) {
-				if(file_exists($linetrim)){
-					
-					$shablons = $this->getTemplate($linetrim);
-					$this->html .= $this->parser($shablons);
-					continue;
-				}
-				if(strpos(' '.$line,'include') && !strpos(' '.$line,"\\")){
-					$link = trim(explode ('include', $linetrim)[1]);
-					$shablons = $this->getTemplate($link);
-					$this->html .= $this->parser($shablons);
-					
-				} elseif (strpos(' '.$line,"\\")){
-					$this->html .= "\n";
-				}else 	$this->html .= $line . "\n";
-				continue;
-			}
-*/			
 			if(strpos(' ' . $line, "*/")){
 				$n = 0;
 				continue;
@@ -266,9 +243,8 @@ class TagParser {
 
 			if($n === 3 || $n === 6 ){
 				
-				// Коментарии
+				// Комментарии
 				if(strpos(' ' . $line, "\\")) {
-					#$this->html .= "\n<!-- " . trim(str_replace("\\", '', $line)) . " -->";
 					continue;
 				}
 				if( $linetrim == '||||'){
@@ -299,10 +275,6 @@ class TagParser {
 						$n = 0;
 						continue;
 					}
-/*					
-				$replase[] = $line;
-				continue;
-*/
 				
 				if($linetrim == '/%') {
 					$n = 4;
@@ -311,7 +283,6 @@ class TagParser {
 				}elseif (strpos(' '.$line,'include')) {
 					if(!in_array('/%', $replase)) $replase[] = '/%';
 					$link = trim(explode ('include', $linetrim)[1]);
-					#$replase[] = $this->getTemplate($link);
 					$replase[] = $link;
 					$sablons = str_replace(['{', '}'], ['[', ']'], implode("\n", $replase));
 					$sablons = $this->parseShablon($sablons);
@@ -326,10 +297,7 @@ class TagParser {
 					$replase = [];
 					$n = 0;
 					$this->html .= $this->parser($sablons);
-					
-					
-				/*}elseif($linetrim == '}'){
-					$n = 4;*/
+
 				}else $replase[] = $line;
 				continue;
 			}
@@ -338,19 +306,20 @@ class TagParser {
 			if($n === 4){
 					// Коментарии
 				if(strpos(' ' . $line, "\\")) {
-					#$this->html .= "\n<!-- " . trim(str_replace("\\", '', $line)) . " -->";
 					continue;
 				}
 				if($linetrim == '}')$linetrim = '%/';
 				if($linetrim == '%/'){
 					#if(empty($replase[0]))continue;
 					$sablons = trim(implode("\n", $replase));
-#print_r ($sablons);
+#print_r ($sablons . "\n");
 					if($sablons[0] !== '{'){
 						$sablons = str_replace(['{', '}'], ['[', ']'], $sablons);
 						$sablons = $this->parseShablon($sablons);
+						#print_r ($sablons . "\n");
 					}else{
 						$sablons = str_replace('/%', '!!!!', $sablons);
+						#print_r ($sablons . "\n");
 					}
 					
 					$replase = [];
@@ -361,10 +330,9 @@ class TagParser {
 				}elseif (strpos(' '.$line,'include')) {
 					if(!in_array('/%', $replase)) $replase[] = '/%';
 					$link = trim(explode ('include', $linetrim)[1]);
-					#$replase[] = $this->getTemplate($link);
 					$replase[] = $link;
 					$sablons = str_replace(['{', '}'], ['[', ']'], implode("\n", $replase));
-					#print_r($sablons);
+	#print_r($sablons);
 					$sablons = $this->parseShablon($sablons);
 					$replase = [];
 					$n = 0;
@@ -403,30 +371,7 @@ class TagParser {
 					$this->html .= "\n";
 					
 				}
-		/*	
-			if($linetrim == 'HTML/' || $linetrim == 'PHP/' || $linetrim == 'MD/' && $n == 1){ 
-				// Закрываем теги при снижении уровня вложенности
-				while ($indent < (count($stack) * 2)) {
-					$this->html .= array_pop($stack);
-				}
-				if($linetrim == 'MD/') $this->html .= array_pop($stack);
-				$this->html .= "\n";
-				
-				continue;
-			}
-		*/	
-		/*	
-			if($linetrim == 'MD/' //|| $linetrim == 'MD000000' 
-			&& $n === 1) {
-				// Закрываем теги при снижении уровня вложенности
-				while ($indent < (count($stack) * 2)) {
-					$this->html .= array_pop($stack);
-				}
-				$this->html .= static::ZERO_MD_START;
-				
-				continue;
-			}
-		*/	
+	
 			if($linetrim == '/HTML' || 
 				strpos($line, '</zero-md') || 
 				strpos($line, '</script') || 
@@ -437,11 +382,7 @@ class TagParser {
 				$linetrim == '/PHP' 
 				&& $n === 1 ) {
 					$n = 0;
-					/*
-					if($linetrim == 'HTML/' || $linetrim == 'PHP/') {
-						continue;
-					}
-					*/
+
 					if($linetrim == '/MD') {
 						$this->html .= static::ZERO_MD_END;
 						continue;
@@ -449,35 +390,9 @@ class TagParser {
 					
 				}
 				
-			
-			/*	
-			if($linetrim == '/MD' //|| $linetrim == '000000MD' 
-			#&& $n !== 4  && $n !== 3 
-			&& $n === 1) {
-				$this->html .= static::ZERO_MD_END;
-				$n = 0;
-				continue;
-			}
-			*/
+
 			if($n == 1) {
 				
-				
-				/*
-				if(file_exists($linetrim)){
-					
-					$shablons = $this->getTemplate($linetrim);
-					$this->html .= $this->parser($shablons);
-					continue;
-				}
-				*/
-				/*elseif(strpos(' '.$line,'include') && !strpos(' '.$line,"\\")){
-					$link = trim(explode ('include', $linetrim)[1]);
-					print_r ($link);
-					$shablons = $this->getTemplate($link);
-					
-					$this->html .= $this->parser($shablons);
-					
-				}*/ 
 				if (strpos(' '.$line,'\\')){
 					$this->html .= "	\n";
 				}
@@ -521,44 +436,13 @@ class TagParser {
 				if(strpos(' '.$line,"includ e")){
 				$line = str_replace("includ e", "include", $line);
 					$this->html .= $line;
-				}
-				/*
-				if(strpos(' '.$line,"| ")){
-				$line = str_replace(" |", "|", $line);
-					$this->html .= $line;
-				}
-				*/
-				/*elseif(strpos(' '.$line,"MD /")){
-					$line = str_replace("MD /", "MD/", $line);
-					$this->html .= $line;
-				}elseif(strpos(' '.$line,"/ MD")){
-					$line = str_replace("/ MD", "/MD", $line);
-					$this->html .= $line;
-				}*/else 	$this->html .= $line . "\n";
+				}else 	$this->html .= $line . "\n";
 				
 				
 				
 				continue;
 			}
-			/*elseif($n == 0 && strpos(' '.$line,'include') && !strpos(' '.$line,"\\")){
-				$link = trim(explode ('include', $linetrim)[1]);
-					
-					#$shablons = $this->getTemplate($link);
-					#$n == 0;
-					#print_r ($shablons);
-					$this->html .= $this->parser($link);
-					#print_r ($this->parser($shablons));
-			}*/
-			
-			/*	
-			if($linetrim == '/MD' //|| $linetrim == '000000MD' 
-			#&& $n !== 4  && $n !== 3 
-			&& $n === 1) {
-				$this->html .= static::ZERO_MD_END;
-				continue;
-			}
-			
-			*/
+
 			
 			// Коментарии
 			if(strpos(' ' . $line, "\\")) {
@@ -589,7 +473,7 @@ class TagParser {
 			
 			
 				// пропускаем HTML
-				if($linetrim[0] == '<' ) {
+				if($linetrim[0] == '<' && $n !== 7 ) {
 					
 					if(!strpos($line, '</')){
 						$n = 5;
@@ -626,12 +510,7 @@ class TagParser {
 					$this->html .= $tagclos;
             }
 		}
-			
-			
-			
-			
-			
-			
+		
 			// Добавил правило если переменной небыло и остались Фигурные скобки
 			if(strpos(' ' . $linetrim, '{') && strpos(' ' . $linetrim, '}')){
 				$linetrim = str_replace(['{', '}'], '', $linetrim);
@@ -718,7 +597,7 @@ class TagParser {
 	private function renderTag(array $node): string {
 
 		if($node['tag'] == 'include'){
-			$text = $this->getTemplate($node['text']);//$this->phpParser($this->getTemplate($node['text']));//
+			$text = $this->getTemplate($node['text']);
 			#print_r($text . "\n");
 			return New TagParser($text);
 			
@@ -746,8 +625,8 @@ class TagParser {
 			// 1. Удаляем все лишние пробелы и переносы строк
 			#$cleanInput = preg_replace('/\s+/', ' ', $input);
 			
-			// 2. Разделяем на массив по '{' или '['
-			$parts = explode('[', $input);//(strpos(' ' . $cleanInput, '{')) ? explode('{', $cleanInput) : 
+			// 2. Разделяем на массив по  '['
+			$parts = explode('[', $input);
 			
 			
 			// Первая часть содержит заголовки (если они есть)
@@ -771,10 +650,7 @@ class TagParser {
 				array_shift($parts);
 			// 3. Обрабатываем каждую запись
 			foreach ($parts as $part) {
-				#if(empty($part)) continue;
-				// Удаляем закрывающую скобку и лишние пробелы
-				#$part = trim(str_replace('}', '', $part));
-				
+		
 				// Разбиваем по разделителю |
 				$values = array_map('trim', explode('|', $part));
 				
@@ -809,17 +685,14 @@ class TagParser {
 				$template = str_replace('%/', '', explode('/%', $template)[1]);
 			} 
 				$template = $this -> getTemplate($template);
-			
-			#$result = $template;
+
 			// Заменяем все плейсхолдеры вида {KEY} на соответствующие значения
 			foreach ($record as $key => $value) {
 				$key = trim($key);
 				$value1 = $value;
 				$value2 = "\n" . $value;
 				$value3 = str_replace("\n", ' ', $value1);
-				#$input = str_replace(['{' . $key. '}', '[' . $key. ']', '$' . $key], $value,  $input);
-				#$template = str_replace(['{' . $key. '}', '[' . $key. ']', '$' . $key], [$value, $value2, $value3],  $template);
-				$template = str_replace(['{' . $key . '}', '[' . $key . ']', '$' . $key], [$value1, $value2, $value3], $template);//, '$' . $key
+				$template = str_replace(['{' . $key . '}', '[' . $key . ']', '$' . $key], [$value1, $value2, $value3], $template);
 			}
 			#print_r ($result);
 			return $template;
@@ -828,33 +701,13 @@ class TagParser {
 	private function parseShablon($input) {
 		#print_r($input);
 		if(strpos($input, '/%') == false) $input = $this->parseSablonOne($input);
-		
-		/*if(!strpos($dataPart, '[')){
-			$dataPart = $this->parseSablonOne($input);
-			print_r($dataPart);
-		}
-		*/
-		#print_r ($input);
-		#$input = str_replace ('/', '000000', $input);
+
 		// Разделяем входную строку на данные и шаблон
 		$parts = explode('/%', $input, 2);
 		#print_r ($input);
-		#$dataPart = trim($parts[0]);
-		#$dataPart = $this->parseSablonOne($dataPart);
-/*		
-		if(!strpos($dataPart, '[')){
-			$dataPart = $this->parseSablonOne($dataPart);
-			#print_r ($dataPart);
-		} 
-*/		
-		/*else{
-			$dataPart = preg_replace('/\s+/', ' ', $dataPart);
-			$dataPart = str_replace ("[", "\n[", $dataPart);
-			#$dataPart = $this->parseSablonOne($dataPart);
-		}*/
 		
 		$templatePart = $parts[1] ?? ''; // Сохраняем все пробелы и переносы
-		#$link = (strpos(' ' . $templatePart, '000000')) ? str_replace('000000', '/', $templatePart) : $templatePart;
+		#print_r ($templatePart);
 		if(file_exists(trim($templatePart))){
 			$templatePart = $this->getTemplate(trim($templatePart));
 			#print_r ($templatePart);
@@ -882,9 +735,7 @@ class TagParser {
 		}
 		return $output;
 	}
-	
-	#private function 
-	
+
 	private function parseSablonOne($input) {
 		$result = '';
 		$n = 0;
@@ -976,9 +827,6 @@ class TagParser {
 		$phpkod .= "\$_SESSION['VAR'] = \$result;\n";
 		$phpkod .= "?>\n"; // Закрывающий тег
 
-		#echo "\nСгенерированный PHP код:\n";
-		#echo $phpkod;
-		
 		// 4. Запускаем код в буфере
 		session_start(); // Убедимся, что сессия стартовала
 
@@ -1012,19 +860,17 @@ $text = "
 			li.item.active Пункт 4
 ";
 $inputs = "
-<!DOCTYPE html>
 html(lang='ru')
   head
-    meta(charset='utf-8')
     title Селекторное письмо
-	<!-- Невидимый коментарий -->
+	<!-- комментарий -->
   include ./header.php
   body
   <p>Этот текст будет в теге </p>
 		p.paragraph
 			img.image(src='picture.jpg' alt='Изображение')
 		a(href='/') ссылка
- // Коментарий будет видимым в html
+\\ Комментарий будет видимым в html
 		<!-- div class='class'>Этот элемент пропускается</div-->
     div.class
       ul#main1/mai.menu.menu2 ТЕКСТ
